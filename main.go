@@ -9,5 +9,6 @@ import (
 
 func main() {
 	fmt.Printf("Start")
+	fmt.Printf("Start")
 	beego.Run()
 }
