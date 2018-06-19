@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"hello/tcpserver"
+
 	"github.com/astaxie/beego"
 )
 
@@ -19,7 +21,7 @@ type UsrController struct {
 }
 
 func (c *UsrController) Get() {
-	c.Data["Website"] = "hello.me"
+	c.Data["Website"] = string(tcpserver.Buffer[0:5])
 	c.Data["Email"] = "astaxie@zhdfly.com"
 	c.TplName = "index.tpl"
 }

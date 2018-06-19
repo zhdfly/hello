@@ -9,7 +9,7 @@ import (
 
 var host = flag.String("host", "", "host")
 var port = flag.String("port", "9999", "port")
-var buffer [1024]byte
+var Buffer [1024]byte
 
 type Msg struct {
 	Data string `json:"data"`
@@ -66,14 +66,14 @@ func handleRequest(conn net.Conn) {
 
 	for {
 		// 读取一行数据, 以"\n"结尾
-		n, err := conn.Read(buffer[0:])
+		n, err := conn.Read(Buffer[0:])
 		if err != nil {
 			return
 		}
 		if n > 0 {
-			buffer[n] = 0
-			fmt.Println(buffer[0:n])
-			conn.Write(buffer[0:n])
+			Buffer[n] = 0
+			fmt.Println(Buffer[0:n])
+			conn.Write(Buffer[0:n])
 		}
 		//conn.Write(r)
 		//conn.Write([]byte("\n"))
