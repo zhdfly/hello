@@ -11,9 +11,9 @@ type MainController struct {
 }
 
 func (c *MainController) Get() {
-	c.Data["Website"] = "beego.me"
-	c.Data["Email"] = "astaxie@gmail.com"
-	c.TplName = "index.tpl"
+	c.Data["name"] = "beego.me"
+	//c.Data["Email"] = "astaxie@gmail.com"
+	c.TplName = "index.html"
 }
 
 type UsrController struct {
@@ -21,7 +21,7 @@ type UsrController struct {
 }
 
 func (c *UsrController) Get() {
-	c.Data["Website"] = string(tcpserver.Buffer[0:5])
-	c.Data["Email"] = "astaxie@zhdfly.com"
-	c.TplName = "index.tpl"
+	c.Data["name"] = string(tcpserver.Buffer[0:5])
+	//c.Data["Email"] = "astaxie@zhdfly.com"
+	c.TplName = "index.html"
 }
