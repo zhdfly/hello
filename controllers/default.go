@@ -12,7 +12,14 @@ type MainController struct {
 
 func (c *MainController) Get() {
 	c.Data["name"] = "beego.me"
-	//c.Data["Email"] = "astaxie@gmail.com"
+	dt, len, err := tcpserver.GetRealTimeData("admin")
+	if err == nil {
+		c.Data["tmp"] = dt
+		c.Data["len"] = len
+	} else {
+		c.Data["tmp"] = "Error!!!"
+	}
+
 	c.TplName = "index.html"
 }
 
