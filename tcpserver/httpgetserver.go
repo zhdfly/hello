@@ -97,6 +97,7 @@ func insertValue(index int, data string) {
 				if Mbdrv[i].Drv[j].Dottype == strd[0] {
 					Mbdrv[i].Drv[j].Value = strd[1]
 				}
+				break
 			}
 		}
 	}
