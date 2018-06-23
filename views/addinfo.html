@@ -1,0 +1,65 @@
+[[template "top.html" .]]
+<div class="main">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container-fluid">
+            [[if eq .result "OK"]]
+            <div class="alert alert-success alert-dismissible" role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <i class="fa fa-check-circle"></i> Your settings have been succesfully saved
+            </div>
+            [[end]]
+            <h3 class="page-title">添加设备信息</h3>
+            <div class="row">
+                <div class="col-md-3"></div>
+                <div class="col-md-6">
+                    <div class="panel">
+                        <div class="panel-body">
+                            <form action="/addnewdotinfo" method="post">
+                                <br>
+                                <div>设备名称</div>
+                                <input type="text" class="form-control" placeholder="text field" name="drv">
+                                <br>
+                                <div>数据名称</div>
+                                <input type="text" class="form-control" placeholder="text field" name="name">
+                                <br>
+                                <div>数据类型</div>
+                                <select class="form-control" name="dottype">
+                                    <option value="gt">空气温度</option>
+                                    <option value="gw">空气湿度</option>
+                                    <option value="et">土壤温度</option>
+                                    <option value="ew">土壤湿度</option>
+                                    <option value="fs">风机状态</option>
+                                    <option value="wps">水泵状态</option>
+                                </select>
+                                <br>
+                                <div>
+                                    <label class="fancy-radio">
+                                        <input name="datatype" value="ft" type="radio">
+                                        <span>
+                                            <i></i>数值类</span>
+                                    </label>
+                                    <label class="fancy-radio">
+                                        <input name="datatype" value="sw" type="radio">
+                                        <span>
+                                            <i></i>开关类</span>
+                                    </label>
+                                </div>
+                                <br>
+                                <div>设备说明</div>
+                                <textarea class="form-control" placeholder="textarea" rows="4" name="dotinfo"></textarea>
+                                <br>
+                                <button type="submit" class="btn btn-primary pull-right">提交</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3"></div>
+            </div>
+        </div>
+    </div>
+    <!-- END MAIN CONTENT -->
+</div>
+[[template "bottom.html" .]]

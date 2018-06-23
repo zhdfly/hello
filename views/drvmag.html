@@ -1,0 +1,51 @@
+[[template "top.html" .]]
+<div class="main">
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <div class="panel-body no-padding" id="app">
+                <div class="row">
+                    <div class="col-md-4" v-for="c in ob">
+                        <!--设备显示面板-->
+                        <div class="panel">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{c.name}}</h3>
+                                <div class="right">
+                                    <button type="button" class="btn-toggle-collapse">
+                                        <i class="lnr lnr-chevron-up"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-unstyled activity-timeline">
+                                    <li>
+                                        <i class="fa fa-comment activity-icon"></i>
+                                        <p>{{c.time}}
+                                            <span class="timestamp">创建时间</span>
+                                        </p>
+                                    </li>                                    
+                                </ul>
+                                <div class="pull-right"><button type="button" class="btn btn-success btn-xs" @click="toggle(c.name)">管理</button>
+                                    <button type="button" class="btn btn-primary btn-xs">修改</button>
+                                    <button type="button" class="btn btn-danger btn-xs">删除</button>
+                                </div>
+                            </div>
+                        </div>
+                        <!--设备显示面板-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var tmp = JSON.parse([[.usrdrvinfo]]);
+    new Vue({
+        el: '#app',
+        data: {
+            ob: tmp
+        }
+    })
+    console.log(tmp)
+</script> [[template "bottom.html" .]]

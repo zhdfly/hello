@@ -1,85 +1,29 @@
-<!doctype html>
-<html lang="en">
+[[template "top.html" .]]
 
-<head>
-	<title>[[.name]]</title>
-	<meta charset="utf-8"> [[template "top.html" .]]
-	
 	<!-- MAIN -->
 	<div class="main">
 		<!-- MAIN CONTENT -->
 		<div class="main-content">
 			<div class="container-fluid">
 				<!-- OVERVIEW -->
-				<div class="panel panel-headline">
+				<div class="panel panel-headline" id="app">
 					<div class="panel-heading">
-						<h3 class="panel-title">[[.name]]</h3>
-						<p class="panel-subtitle">[[.tmp]]</p>
-						<div id="app">
-							<ul>
-							  <li v-for="site in dddd">
-								{{ site }}
-							  </li>
-							</ul>
-						  </div>
+						<h3 class="panel-title">[[.name]]</h3>			
 					</div>
-					<div class="panel-body">
+					<div class="panel-body" v-for="c in ob">
+							{{ c.User }}
 						<div class="row">
-							<div class="col-md-3">
+							<div class="col-md-3" v-for="v in c.Drv">
 								<div class="metric">
 									<span class="icon">
 										<i class="fa fa-download"></i>
 									</span>
 									<p>
-										<span class="number">1,252</span>
-										<span class="title">Downloads</span>
+										<span class="number">{{v.Dotname}}</span>
+										<span class="title">{{v.Value}}</span>
 									</p>
 								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="metric">
-									<span class="icon">
-										<i class="fa fa-shopping-bag"></i>
-									</span>
-									<p>
-										<span class="number">203</span>
-										<span class="title">Sales</span>
-									</p>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="metric">
-									<span class="icon">
-										<i class="fa fa-eye"></i>
-									</span>
-									<p>
-										<span class="number">274,678</span>
-										<span class="title">Visits</span>
-									</p>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="metric">
-									<span class="icon">
-										<i class="fa fa-bar-chart"></i>
-									</span>
-									<p>
-										<span class="number">35%</span>
-										<span class="title">Conversions</span>
-									</p>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="metric">
-									<span class="icon">
-										<i class="fa fa-bar-chart"></i>
-									</span>
-									<p>
-										<span class="number">35%</span>
-										<span class="title">Conversions</span>
-									</p>
-								</div>
-							</div>
+							</div>							
 						</div>
 
 					</div>
@@ -92,12 +36,13 @@
 	</div>
 	<script>
 		var tmp = JSON.parse([[.tmp]]);
-			new Vue({
-			  el: '#app',
-			  data: {dddd:
-				  tmp				 			  
-			  }
-			})
-			</script>
+		new Vue({
+			el: '#app',
+			data: {
+				ob: tmp
+			}
+		})
+		console.log(tmp)
+	</script>
 	<!-- END MAIN -->
-	[[template "bottom.html" .]]
+	

@@ -9,6 +9,7 @@ import (
 )
 
 func main() {
+	tcpserver.ConfigSQL()
 	go tcpserver.Tcpstart("9999")
 	go tcpserver.StarthttpGet()
 	fmt.Printf("Start\r\n") //ceshi
