@@ -164,3 +164,11 @@ func Getusrnotdrvinfo(name string) (string, error) {
 	str, err := json.Marshal(ob)
 	return string(str), err
 }
+func Dltdrvdot(drv string, dot string) string {
+	o := orm.NewOrm()
+	_, err := o.Raw("DELETE FROM dot WHERE name = ? and drv = ?", dot, drv).Exec()
+	if err == nil {
+		return "OK"
+	}
+	return "ERR"
+}

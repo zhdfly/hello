@@ -28,16 +28,50 @@ type UsrController struct {
 	beego.Controller
 }
 
-func (c *UsrController) Get() {
-	c.Data["name"] = "beego.me"
-	c.Data["result"] = "NO"
-	//c.Data["Email"] = "astaxie@zhdfly.com"
-	c.TplName = "addinfo.html"
+func (this *UsrController) Get() {
+	posttype := this.GetString("type")
+	if posttype == "drvdot" {
+		rlt, _ := tcpserver.Getdrvdotinfo(this.GetString("drv"))
+		fmt.Println(rlt)
+		this.Data["name"] = "beego"
+		this.Data["drv"] = this.GetString("drv")
+		this.Data["usrdrvinfo"] = rlt
+		this.TplName = "addinfo.html"
+	}
+}
+func (this *UsrController) Post() {
+	posttype := this.GetString("type")
+	if posttype == "drvdot" {
+		rlt, err := tcpserver.Getdrvdotinfo(this.GetString("drv"))
+		fmt.Println(rlt)
+		if err == nil {
+			this.Ctx.WriteString(rlt)
+		} else {
+			this.Ctx.WriteString("")
+		}
+	}
+	if posttype == "dltdrvdot" {
+		rlt := tcpserver.Dltdrvdot(this.GetString("drv"), this.GetString("dotname"))
+		this.Ctx.WriteString(rlt)
+		tcpserver.Getdotinfo()
+	}
 }
 
 //自定义控制器02
 type AddnewdotinfoController struct {
 	beego.Controller
+}
+
+func (this *AddnewdotinfoController) Get() {
+	var posttype string
+	if posttype == "drvdot" {
+		rlt, _ := tcpserver.Getdrvdotinfo(this.GetString("drv"))
+		fmt.Println(rlt)
+		this.Data["name"] = "beego"
+		this.Data["usrdrvinfo"] = rlt
+		this.TplName = "addinfo.html"
+	}
+	this.TplName = "addinfo.html"
 }
 
 //实现Post方法
