@@ -1,15 +1,50 @@
 [[template "top.html" .]]
+<script type="text/javascript"> 
+    $('#exampleModal').on('show.bs.modal', function (event) {
+
+    });
+    $(document).ready(function () {
+        $("#button").on("click", function () {
+            var name = $("#drv-name").val();
+            var port = $("#drv-port").val();
+            var types = $("#drv-type").val();
+            var info = $("#drv-info").val();
+            if (name.length < 2) {
+                alert("设备名称长度必须大于2")
+            }
+            else {
+                $.post("/drvmag",
+                    {
+                        type: "creatnewdrv",
+                        name: name,
+                        port: port,
+                        types: types,
+                        info: info
+                    },
+                    function (data, status) {
+                        alert("数据：" + data + "\n状态：" + status);
+                    });
+
+            }
+        });
+    });
+</script>
 <div class="main">
     <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="container-fluid">
             <div class="panel-body no-padding" id="app">
+                <div class="panel-heading panel-title">
+                    设备管理
+                    <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#exampleModal" data-whatever="张三">新增</button>
+                </div>
+                <br>
                 <div class="row">
                     <div class="col-md-4" v-for="c in ob">
                         <!--设备显示面板-->
                         <div class="panel">
                             <div class="panel-heading">
-                                <h3 class="panel-title">{{c.name}}</h3>
+                                <h3 class="panel-title">{{c.Name}}</h3>
                                 <div class="right">
                                     <button type="button" class="btn-toggle-collapse">
                                         <i class="lnr lnr-chevron-up"></i>
@@ -20,32 +55,218 @@
                                 <ul class="list-unstyled activity-timeline">
                                     <li>
                                         <i class="fa fa-comment activity-icon"></i>
-                                        <p>{{c.time}}
+                                        <p>
                                             <span class="timestamp">创建时间</span>
+                                            <span class="timestamp">{{c.Time}}</span>
                                         </p>
-                                    </li>                                    
+                                    </li>
                                 </ul>
-                                <div class="pull-right"><button type="button" class="btn btn-success btn-xs" @click="toggle(c.name)">管理</button>
-                                    <button type="button" class="btn btn-primary btn-xs">修改</button>
-                                    <button type="button" class="btn btn-danger btn-xs">删除</button>
+                                <div class="pull-right">
+                                    <button class="btn btn-success btn-xs" data-toggle="modal" data-target="#drvdots" @click="getdrvdot(c.Name)">管理</button>
+                                    <button class="btn btn-primary btn-xs">修改</button>
+                                    <button class="btn btn-danger btn-xs">删除</button>
                                 </div>
                             </div>
                         </div>
                         <!--设备显示面板-->
                     </div>
                 </div>
+                <!--用户设备-->
+                <div class="modal fade" id="newdot" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <h4 class="modal-title">管理设备数据点</h4>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!--设备数据点-->
+                <div class="modal fade" id="drvdots" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">×</span>
+                                </button>
+                                <h4 class="modal-title">管理设备数据点</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th style="width: 20%">名称</th>
+                                                    <th style="width: 40%">类型</th>
+                                                    <th style="width: 20%">格式</th>
+                                                    <th style="width: 20%">操作</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="c in ddob">
+                                                    <td>{{c.Name}}</td>
+                                                    <td>{{c.Dottype}}</td>
+                                                    <td>{{c.Datatype}}</td>
+                                                    <td class="pull-right">
+                                                        <button type="button" class="btn btn-danger btn-xs" @click="dltdrvdot(c.Name)">删除</button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div>数据点名称</div>
+                                        <input type="text" class="form-control" placeholder="text field" id="dotname">
+                                        <br>
+                                        <div>数据点类型</div>
+                                        <select class="form-control" id="dottype">
+                                            <option value="空气温度">空气温度</option>
+                                            <option value="空气湿度">空气湿度</option>
+                                            <option value="土壤温度">土壤温度</option>
+                                            <option value="土壤湿度">土壤湿度</option>
+                                            <option value="风机状态">风机状态</option>
+                                            <option value="水泵状态">水泵状态</option>
+                                        </select>
+                                        <br>
+                                        <div>
+                                            <label class="fancy-radio">
+                                                <input id="datatype" value="数值类" type="radio">
+                                                <span>
+                                                    <i></i>数值类</span>
+                                            </label>
+                                            <label class="fancy-radio">
+                                                <input id="datatype" value="开关类" type="radio">
+                                                <span>
+                                                    <i></i>开关类</span>
+                                            </label>
+                                        </div>
+                                        <br>
+                                        <div>设备说明</div>
+                                        <textarea class="form-control" placeholder="textarea" rows="4" id="dotinfo"></textarea>
+                                        <br>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" id="submitsltdrv" class="btn btn-primary" @click="adddrvdot()">添加数据点</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--设备数据点-->
+                </div>
             </div>
         </div>
     </div>
-</div>
+    <!--修改用户信息弹出框-->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">新建设备</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="recipient-name" class="control-label">设备名称</label>
+                            <input type="text" class="form-control" id="drv-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">服务端口</label>
+                            <input type="text" class="form-control" id="drv-port" value="2020"></input>
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="control-label">协议类型</label>
+                            <input type="text" class="form-control " id="drv-type" value="MODBUS"></input>
+                        </div>
+                        <div>设备说明</div>
+                        <textarea class="form-control" placeholder="textarea" rows="4" id="drv-info"></textarea>
+                        <br>
+                    </form>
+                </div>
 
-<script>
-    var tmp = JSON.parse([[.usrdrvinfo]]);
-    new Vue({
-        el: '#app',
-        data: {
-            ob: tmp
-        }
-    })
-    console.log(tmp)
-</script> [[template "bottom.html" .]]
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" name="button" id="button" value="button" class="btn btn-primary">Send message</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--修改用户信息弹出框-->
+    <script>
+        var tmp = JSON.parse([[.usrdrvinfo]]);
+        new Vue({
+            el: '#app',
+            data: {
+                ob: tmp,
+                drvname: "",
+                ddob: [],
+            },
+            methods: {
+                getdrvdot: function (drv) {
+                    var self = this;
+                    self.drvname = drv
+                    $.post("/drvmag",
+                        {
+                            type: "drvdot",
+                            drv: drv,
+                        },
+                        function (data, status) {
+                            //alert("数据：" + data + "\n状态：" + status);
+                            self.ddob = JSON.parse(data)
+                            console.log(self.ddob)
+                        })
+                },
+                adddrvdot: function () {
+                    var self = this;
+                    var name = $("#dotname").val();
+                    var dtype = $("#dottype").val();
+                    var datatype = $("#datatype").val();
+                    var info = $("#dotinfo").val();
+                    if (name.length < 2) {
+                        alert("设备名称长度必须大于2")
+                    }
+                    else {
+                        $.post("/drvmag",
+                            {
+                                type: "creatnewdot",
+                                name: name,
+                                dtype: dtype,
+                                datatype: datatype,
+                                info: info,
+                                drv: self.drvname
+                            },
+                            function (data, status) {
+                                alert("数据：" + data + "\n状态：" + status);
+                                getdrvdot(self.drvname)
+                            });
+
+                    }
+                },
+                dltdrvdot: function (dot) {
+                    var self = this
+                    var mymessage = confirm("确定删除设备 " + self.drvname + " 中的 " + dot + " 数据点？");
+                    if (mymessage == true) {
+                        $.post("/drvmag",
+                            {
+                                type: "dltdrvdot",
+                                dotname: dot,
+                            },
+                            function (data, status) {
+                                alert("数据：" + data + "\n状态：" + status);
+                            })
+                    }
+                    else if (mymessage == false) {
+                    }
+                }
+            }
+        })
+        console.log(tmp)
+    </script> [[template "bottom.html" .]]

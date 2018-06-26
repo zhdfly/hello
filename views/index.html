@@ -1,48 +1,58 @@
 [[template "top.html" .]]
 
-	<!-- MAIN -->
-	<div class="main">
-		<!-- MAIN CONTENT -->
-		<div class="main-content">
-			<div class="container-fluid">
-				<!-- OVERVIEW -->
-				<div class="panel panel-headline" id="app">
-					<div class="panel-heading">
-						<h3 class="panel-title">[[.name]]</h3>			
-					</div>
-					<div class="panel-body" v-for="c in ob">
-							{{ c.User }}
-						<div class="row">
-							<div class="col-md-3" v-for="v in c.Drv">
-								<div class="metric">
-									<span class="icon">
-										<i class="fa fa-download"></i>
-									</span>
-									<p>
-										<span class="number">{{v.Dotname}}</span>
-										<span class="title">{{v.Value}}</span>
-									</p>
-								</div>
-							</div>							
+<!-- MAIN -->
+<div class="main">
+	<!-- MAIN CONTENT -->
+	<div class="main-content">
+		<div class="container-fluid">
+			<!-- OVERVIEW -->
+			<div id="app">
+				<div v-for="c in ob">
+					<div class="panel">
+						<div class="panel-heading">
+							<h3 class="panel-title">{{ c.User }}</h3>
+							<div class="right">
+								<button type="button" class="btn-toggle-collapse">
+									<i class="lnr lnr-chevron-up"></i>
+								</button>
+							</div>
 						</div>
-
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-4" v-for="v in c.Drv">
+									<div class="metric" style="height: 150px;">
+										<span class="icon">
+											<i class="fa fa-download"></i>
+										</span>
+										<p>
+											<span class="number">{{v.Dotname}}</span>
+											<br>
+											<span class="title">数值：{{v.Value}}</span>
+										</p>
+										<br>
+										<div class="title pull-bottom">{{v.Drvname}}</div>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
-				<!-- END OVERVIEW -->
-
 			</div>
+			<!-- END OVERVIEW -->
+
 		</div>
-		<!-- END MAIN CONTENT -->
 	</div>
-	<script>
-		var tmp = JSON.parse([[.tmp]]);
-		new Vue({
-			el: '#app',
-			data: {
-				ob: tmp
-			}
-		})
-		console.log(tmp)
-	</script>
-	<!-- END MAIN -->
-	
+	<!-- END MAIN CONTENT -->
+</div>
+<script>
+	var tmp = JSON.parse([[.tmp]]);
+	console.log([[.tmp]])
+	new Vue({
+		el: '#app',
+		data: {
+			ob: tmp
+		}
+	})
+	console.log(tmp)
+</script>
+<!-- END MAIN -->

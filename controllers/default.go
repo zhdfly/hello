@@ -79,6 +79,10 @@ func (this *MagController) Post() {
 	if posttype == "alldrv" {
 		usrjson, err = tcpserver.Getusrnotdrvinfo(this.GetString("usr"))
 	}
+	if posttype == "usrsltdrv" {
+		tcpserver.Setusrdrv(this.GetString("usr"), this.GetString("drv"))
+		tcpserver.Getdotinfo()
+	}
 	if err == nil {
 		this.Ctx.WriteString(usrjson)
 	} else {
@@ -96,6 +100,7 @@ func (this *AddnewusrController) Post() {
 	rlt := tcpserver.Inserttousr(this.GetString("usr"), this.GetString("pas"))
 	if rlt == "OK" {
 		this.Ctx.WriteString("OK")
+		tcpserver.Getdotinfo()
 	} else {
 		this.Ctx.WriteString("ERR")
 	}
@@ -109,7 +114,7 @@ type DrvmagController struct {
 
 //实现Post方法
 func (this *DrvmagController) Get() {
-	usrjson, err := tcpserver.Getusrdrvinfo(this.GetString("usr"))
+	usrjson, err := tcpserver.Getdrvinfo()
 	if err != nil {
 		println(err)
 	}
@@ -117,4 +122,35 @@ func (this *DrvmagController) Get() {
 	this.Data["name"] = "beego.me"
 	this.Data["usrdrvinfo"] = usrjson
 	this.TplName = "drvmag.html"
+}
+
+//实现Post方法
+func (this *DrvmagController) Post() {
+	var posttype = this.GetString("type")
+	if posttype == "creatnewdrv" {
+		rlt := tcpserver.InserttoDrv(this.GetString("name"), this.GetString("port"), this.GetString("types"), this.GetString("info"))
+		if rlt == "OK" {
+			this.Ctx.WriteString("OK")
+			tcpserver.Getdotinfo()
+		} else {
+			this.Ctx.WriteString("ERR")
+		}
+	}
+	if posttype == "creatnewdot" {
+		rlt := tcpserver.Inserttodot(this.GetString("drv"), this.GetString("name"), this.GetString("dtype"), this.GetString("datatype"), this.GetString("info"))
+		if rlt == "OK" {
+			this.Ctx.WriteString("OK")
+			tcpserver.Getdotinfo()
+		} else {
+			this.Ctx.WriteString("ERR")
+		}
+	}
+	if posttype == "drvdot" {
+		rlt, err := tcpserver.Getdrvdotinfo(this.GetString("drv"))
+		if err == nil {
+			this.Ctx.WriteString(rlt)
+		} else {
+			this.Ctx.WriteString("")
+		}
+	}
 }

@@ -13,53 +13,90 @@
             [[end]]
             <h3 class="page-title">添加设备信息</h3>
             <div class="row">
-                <div class="col-md-3"></div>
                 <div class="col-md-6">
                     <div class="panel">
                         <div class="panel-body">
-                            <form action="/addnewdotinfo" method="post">
-                                <br>
-                                <div>设备名称</div>
-                                <input type="text" class="form-control" placeholder="text field" name="drv">
-                                <br>
-                                <div>数据名称</div>
-                                <input type="text" class="form-control" placeholder="text field" name="name">
-                                <br>
-                                <div>数据类型</div>
-                                <select class="form-control" name="dottype">
-                                    <option value="gt">空气温度</option>
-                                    <option value="gw">空气湿度</option>
-                                    <option value="et">土壤温度</option>
-                                    <option value="ew">土壤湿度</option>
-                                    <option value="fs">风机状态</option>
-                                    <option value="wps">水泵状态</option>
-                                </select>
-                                <br>
-                                <div>
-                                    <label class="fancy-radio">
-                                        <input name="datatype" value="ft" type="radio">
-                                        <span>
-                                            <i></i>数值类</span>
-                                    </label>
-                                    <label class="fancy-radio">
-                                        <input name="datatype" value="sw" type="radio">
-                                        <span>
-                                            <i></i>开关类</span>
-                                    </label>
-                                </div>
-                                <br>
-                                <div>设备说明</div>
-                                <textarea class="form-control" placeholder="textarea" rows="4" name="dotinfo"></textarea>
-                                <br>
-                                <button type="submit" class="btn btn-primary pull-right">提交</button>
-                            </form>
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 20%">名称</th>
+                                        <th style="width: 40%">类型</th>
+                                        <th style="width: 20%">格式</th>
+                                        <th style="width: 20%">操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="c in ddob">
+                                        <td>{{c.Name}}</td>
+                                        <td>{{c.Dottype}}</td>
+                                        <td>{{c.Datatype}}</td>
+                                        <td class="pull-right">
+                                            <button type="button" class="btn btn-danger btn-xs" @click="dltdrvdot(c.Name)">删除</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-3"></div>
             </div>
         </div>
     </div>
     <!-- END MAIN CONTENT -->
 </div>
+<script>
+var tmp = JSON.parse([[.usrdrvinfo]]);
+        new Vue({
+            el: '#app',
+            data: {
+                ob: tmp,
+                drvname: "",
+                ddob: [],
+            },
+            methods: {
+                adddrvdot: function () {
+                    var self = this;
+                    var name = $("#dotname").val();
+                    var dtype = $("#dottype").val();
+                    var datatype = $("#datatype").val();
+                    var info = $("#dotinfo").val();
+                    if (name.length < 2) {
+                        alert("设备名称长度必须大于2")
+                    }
+                    else {
+                        $.post("/drvmag",
+                            {
+                                type: "creatnewdot",
+                                name: name,
+                                dtype: dtype,
+                                datatype: datatype,
+                                info: info,
+                                drv: self.drvname
+                            },
+                            function (data, status) {
+                                alert("数据1：" + data + "\n状态：" + status);
+                                self.getdrvdot(self.drvname)
+                            });
+
+                    }
+                },
+                dltdrvdot: function (dot) {
+                    var self = this
+                    var mymessage = confirm("确定删除设备 " + self.drvname + " 中的 " + dot + " 数据点？");
+                    if (mymessage == true) {
+                        $.post("/drvmag",
+                            {
+                                type: "dltdrvdot",
+                                dotname: dot,
+                            },
+                            function (data, status) {
+                                alert("数据：" + data + "\n状态：" + status);
+                            })
+                    }
+                    else if (mymessage == false) {
+                    }
+                }
+            }
+        })
+    </script>
 [[template "bottom.html" .]]

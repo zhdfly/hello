@@ -3,6 +3,7 @@ package tcpserver
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
@@ -16,6 +17,8 @@ type Usr struct {
 type Drv struct {
 	Id   int
 	Name string
+	Port string
+	Type string
 	Info string
 	Time string
 }
@@ -27,7 +30,7 @@ type Dot struct {
 	Info     string
 	Drv      string
 }
-type UsrDrv struct {
+type Usrdrv struct {
 	Id      int
 	Usrname string
 	Drvname string
@@ -36,7 +39,7 @@ type UsrDrv struct {
 func ConfigSQL() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 
-	orm.RegisterModel(new(Usr), new(Drv), new(Dot), new(UsrDrv))
+	orm.RegisterModel(new(Usr), new(Drv), new(Dot), new(Usrdrv))
 
 	orm.RegisterDataBase("default", "mysql", "root:zhd1021@tcp(127.0.0.1:3306)/maingo?charset=utf8&loc=Local")
 
@@ -56,6 +59,28 @@ func Inserttousr(usr string, pass string) string {
 	return "ERR"
 }
 
+func InserttoDrv(name string, port string, types string, info string) string {
+	o := orm.NewOrm()
+	var ob Drv
+	ob.Name = name
+	ob.Port = port
+	ob.Type = types
+	ob.Info = info
+	ob.Time = time.Now().Format("2006-01-02 15:04:05")
+	fmt.Println("1123==========", ob)
+	// 三个返回参数依次为：是否新创建的，对象 Id 值，错误
+	if created, _, err := o.ReadOrCreate(&ob, "Name"); err == nil {
+		if created {
+			return "OK"
+		} else {
+			return "ERR"
+		}
+	} else {
+		fmt.Println(err)
+	}
+	return "ERR"
+}
+
 func Inserttodot(drv string, name string, dottype string, datatype string, info string) string {
 	o := orm.NewOrm()
 	var ob Dot
@@ -64,8 +89,9 @@ func Inserttodot(drv string, name string, dottype string, datatype string, info 
 	ob.Datatype = datatype
 	ob.Info = info
 	ob.Drv = drv
+
 	// 三个返回参数依次为：是否新创建的，对象 Id 值，错误
-	if created, _, err := o.ReadOrCreate(&ob, "Name"); err == nil {
+	if created, _, err := o.ReadOrCreate(&ob, "Name", "Drv"); err == nil {
 		if created {
 			return "OK"
 		} else {
@@ -88,7 +114,18 @@ func Getusrinfo() (string, error) {
 func Getdrvinfo() (string, error) {
 	var ob []Drv
 	o := orm.NewOrm()
-	_, err := o.Raw("SELECT name FROM drv").QueryRows(&ob)
+	_, err := o.Raw("SELECT * FROM drv").QueryRows(&ob)
+	if err == nil {
+		fmt.Println(ob)
+	}
+	str, err := json.Marshal(ob)
+	return string(str), err
+}
+
+func Getdrvdotinfo(name string) (string, error) {
+	var ob []Dot
+	o := orm.NewOrm()
+	_, err := o.Raw("SELECT * FROM dot WHERE drv = ?", name).QueryRows(&ob)
 	if err == nil {
 		fmt.Println(ob)
 	}
@@ -97,7 +134,7 @@ func Getdrvinfo() (string, error) {
 }
 
 func Getusrdrvinfo(name string) (string, error) {
-	var ob []UsrDrv
+	var ob []Usrdrv
 	o := orm.NewOrm()
 	_, err := o.Raw("SELECT * FROM usrdrv WHERE usrname = ?", name).QueryRows(&ob)
 	if err == nil {
@@ -105,6 +142,17 @@ func Getusrdrvinfo(name string) (string, error) {
 	}
 	str, err := json.Marshal(ob)
 	return string(str), err
+}
+func Setusrdrv(name string, drvstring string) (string, error) {
+	var ob []Usrdrv
+	//usr := Usrdrv{Usrname: name}
+	o := orm.NewOrm()
+	o.Raw("DELETE FROM usrdrv WHERE usrname = ?", name).Exec()
+	fmt.Println(name, drvstring)
+	json.Unmarshal([]byte(drvstring), &ob)
+	fmt.Println(ob)
+	_, err := o.InsertMulti(len(ob), ob)
+	return "successNums", err
 }
 func Getusrnotdrvinfo(name string) (string, error) {
 	var ob []Drv

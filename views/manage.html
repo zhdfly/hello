@@ -1,12 +1,7 @@
 [[template "top.html" .]]
 <script type="text/javascript"> 
     $('#exampleModal').on('show.bs.modal', function (event) {
-        //var button = $(event.relatedTarget) // 触发事件的按钮  
-        //var recipient = button.data('whatever') // 解析出data-whatever内容  
-        //var modal = $(this)
-        //console.log(recipient)
-        //modal.find('.modal-title').text('Message To ' + recipient)
-        //modal.find('.modal-body input').val(recipient)
+
     });
     $(document).ready(function () {
         $("#button").on("click", function () {
@@ -27,7 +22,7 @@
                             pas: $.md5(pass)
                         },
                         function (data, status) {
-                            alert("数据：" + data + "\n状态：" + status);
+                            alert("数据：" + data + "\n状态：" + status);  
                         });
                 }
             }
@@ -81,17 +76,13 @@
                                         <div>已选择设备</div>
                                         <div class="col-md-4" v-for="n in udob">
                                             <label class="fancy-checkbox">
-                                                <input type="checkbox" :checked="true"  :value="n.Drvname" v-model="dltob">
+                                                <input type="checkbox" name="selectdrv" :checked="true" :value="n.Drvname">
                                                 <span>{{n.Drvname}}</span>
-                                            </label>                                            
+                                            </label>
                                         </div>
-                                        <span>{{ dltob }}</span>
-                                        </div>
-                                        <div class="row metric" style="margin: 10px">
-                                        <div>未选择设备</div>
                                         <div class="col-md-4" v-for="n in adob">
                                             <label class="fancy-checkbox">
-                                                <input type="checkbox">
+                                                <input type="checkbox" name="selectdrv" :value="n.Name">
                                                 <span>{{n.Name}}</span>
                                             </label>
                                         </div>
@@ -100,7 +91,7 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" name="button" id="button" value="button" class="btn btn-primary">Send message</button>
+                                <button type="button" id="submitsltdrv" class="btn btn-primary" @click="sendsltdrv">Send message</button>
                             </div>
                         </div>
                     </div>
@@ -155,12 +146,14 @@
             ob: tmp,
             udob: [],
             adob: [],
-            dltob:[],
-            sltob:[]
+            dltob: [],
+            sltob: [],
+            usrname:""
         },
         methods: {
             toggle: function (item) {
                 var self = this;
+                self.usrname = item
                 $.post("/manage",
                     {
                         type: "userdrv",
@@ -169,7 +162,7 @@
                     function (data, status) {
                         //alert("数据：" + data + "\n状态：" + status);
                         self.udob = JSON.parse(data)
-                        console.log(self.udob)                        
+                        console.log(self.udob)
                         $.post("/manage",
                             {
                                 type: "alldrv",
@@ -180,6 +173,20 @@
                                 self.adob = JSON.parse(data)
                                 console.log(self.adob)
                             })
+                    })
+            },
+            sendsltdrv: function () {
+                var sltdrv = []
+                var self = this;
+                $("input[name='selectdrv']:checked").each(function (i) {//把所有被选中的复选框的值存入数组
+                    sltdrv.push({Id:0,Usrname:self.usrname,Drvname:$(this).val()})
+                });
+                console.log(sltdrv)
+                $.post("/manage",
+                    {
+                        type: "usrsltdrv",
+                        usr: self.usrname,
+                        drv: JSON.stringify(sltdrv)
                     })
             }
         }
