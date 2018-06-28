@@ -22,7 +22,7 @@ func Addnewuserdrv(user string, drv string) {
 			var dottmp ModBusDot
 			dottmp.Dotname = dotob[i].Name
 			dottmp.Dottype = dotob[i].Datatype
-			dottmp.Value = dotob[i].Info
+			dottmp.Value = dotob[i].Val
 			tmp.Dot = append(tmp.Dot, dottmp)
 		}
 	}

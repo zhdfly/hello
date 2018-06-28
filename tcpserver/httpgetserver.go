@@ -131,19 +131,29 @@ func StarthttpGet() {
 		for n := 0; n < len(strs); n++ {
 			insertValue(n, strs[n])
 		}
+		for n := 0; n < len(dotob); n++ {
+			//Inserttodotvalue(dotob[n].Drv, dotob[n].Name, dotob[n].Val, "OK")
+			var tmpdot Dotvalue
+			tmpdot.Drvname = dotob[n].Drv
+			tmpdot.Dotname = dotob[n].Name
+			tmpdot.Value = dotob[n].Val
+			tmpdot.Status = "OK"
+			tmpdot.Time = time.Now().Format("2006-01-02 15:04:05")
+			Inserttodotvalue(tmpdot)
+		}
 		for i := 0; i < len(Mbdrv); i++ {
 			for j := 0; j < len(Mbdrv[i].Drv); j++ {
 				for l := 0; l < len(Mbdrv[i].Drv[j].Dot); l++ {
 					for k := 0; k < len(dotob); k++ {
 						if Mbdrv[i].Drv[j].Dot[l].Dotname == dotob[k].Name && Mbdrv[i].Drv[j].Drvname == dotob[k].Drv {
-							Mbdrv[i].Drv[j].Dot[l].Value = dotob[k].Info
+							Mbdrv[i].Drv[j].Dot[l].Value = dotob[k].Val
 						}
 					}
 				}
 			}
 		}
 		//fmt.Println(strs)
-		time.Sleep(5e9)
+		time.Sleep(3e10)
 	}
 }
 func insertValue(index int, data string) {
@@ -152,7 +162,7 @@ func insertValue(index int, data string) {
 	if len(strd) != 2 {
 		return
 	}
-	dotob[index].Info = strd[1]
+	dotob[index].Val = strd[1]
 	// for i := 0; i < len(dotob); i++ {
 	// 	if deindex == index {
 	// 		//if Mbdrv[i].Drv[j].Dottype == strd[0] {

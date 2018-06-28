@@ -24,6 +24,18 @@ func (c *MainController) Get() {
 
 	c.TplName = "index.html"
 }
+func (this *MainController) Post() {
+	posttype := this.GetString("type")
+	if posttype == "dotvalue" {
+		rlt, err := tcpserver.Getdotvalue(this.GetString("drv"), this.GetString("dot"), this.GetString("start"), this.GetString("stop"))
+		fmt.Println(rlt)
+		if err == nil {
+			this.Ctx.WriteString(rlt)
+		} else {
+			this.Ctx.WriteString("")
+		}
+	}
+}
 
 type UsrController struct {
 	beego.Controller

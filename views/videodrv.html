@@ -3,9 +3,9 @@
     <!-- MAIN CONTENT -->
     <!-- Start Page Header -->
     <div class="page-header">
-        <h1 class="title"> 设备数据点管理</h1>
+        <h1 class="title"> 监控设备管理</h1>
         <ol class="breadcrumb">
-            <li class="active">设备数据点管理</li>
+            <li class="active">监控设备管理</li>
         </ol>
 
         <!-- Start Page Header Right Div -->
@@ -18,18 +18,22 @@
 
     </div>
     <div class="row" id="app">
-            <div class="col-md-4">
+        <div class="col-md-4">
+            <br>
             <video id="myPlayer" width=320 height=180 class="video-js vjs-default-skin" controls autoplay>
-                    <source src="http://hls.open.ys7.com/openlive/3aca8b44564842eb929cc93c097a94c2.m3u8" type="application/x-mpegURL">
-                </video>
-            </div>
-            <div class="col-md-4">
-                    <video id="myPlayers" width=320 height=180 class="video-js vjs-default-skin" controls autoplay>
-                            <source src="http://hls.open.ys7.com/openlive/f01018a141094b7fa138b9d0b856507b.m3u8" type="application/x-mpegURL">
-                        </video>
-                    </div>
+                <source src="http://hls.open.ys7.com/openlive/3aca8b44564842eb929cc93c097a94c2.m3u8" type="application/x-mpegURL">
+            </video>
+            <br>
+        </div>
+        <div class="col-md-4">
+            <br>
+            <video id="myPlayers" width=320 height=180 class="video-js vjs-default-skin" controls autoplay>
+                <source src="http://hls.open.ys7.com/openlive/f01018a141094b7fa138b9d0b856507b.m3u8" type="application/x-mpegURL">
+            </video>
+            <br>
+        </div>
     </div>
-<br>
+    <br>
     <!-- END MAIN CONTENT -->
 </div>
 <script>
@@ -53,12 +57,11 @@
 
                         self.ob = JSON.parse(data)
                     });
-            }            
+            }
         }
     })
-</script> 
+</script>
 <script type="text/javascript">
     new EZUIPlayer('myPlayer');
     new EZUIPlayer('myPlayers');
-</script>
-[[template "bottom.html" .]]
+</script> [[template "bottom.html" .]]

@@ -28,6 +28,7 @@ type Dot struct {
 	Dottype  string
 	Datatype string
 	Info     string
+	Val      string
 	Drv      string
 }
 type Usrdrv struct {
@@ -35,11 +36,19 @@ type Usrdrv struct {
 	Usrname string
 	Drvname string
 }
+type Dotvalue struct {
+	Id      int
+	Drvname string
+	Dotname string
+	Value   string
+	Status  string
+	Time    string
+}
 
 func ConfigSQL() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 
-	orm.RegisterModel(new(Usr), new(Drv), new(Dot), new(Usrdrv))
+	orm.RegisterModel(new(Usr), new(Drv), new(Dot), new(Usrdrv), new(Dotvalue))
 
 	orm.RegisterDataBase("default", "mysql", "root:zhd1021@tcp(127.0.0.1:3306)/maingo?charset=utf8&loc=Local")
 
@@ -100,7 +109,19 @@ func Inserttodot(drv string, name string, dottype string, datatype string, info 
 	}
 	return "ERR"
 }
-
+func Inserttodotvalue(dlist Dotvalue) string {
+	o := orm.NewOrm()
+	//ob := Dotvalue{Drvname: drv, Dotname: name, Value: value, Status: status, Time: time.Now().Format("2006-01-02 15:04:05")}
+	// 三个返回参数依次为：是否新创建的，对象 Id 值，错误
+	if created, err := o.Insert(&dlist); err == nil {
+		if created != 0 {
+			return "OK"
+		} else {
+			return "ERR"
+		}
+	}
+	return "ERR"
+}
 func Getusrinfo() (string, error) {
 	var ob []Usr
 	o := orm.NewOrm()
@@ -171,4 +192,28 @@ func Dltdrvdot(drv string, dot string) string {
 		return "OK"
 	}
 	return "ERR"
+}
+
+type Dotvaluertl struct {
+	Data []string
+	Time []string
+}
+
+func Getdotvalue(drv string, dot string, start string, stop string) (string, error) {
+	var ob []string
+	var obtime []string
+	o := orm.NewOrm()
+	_, err := o.Raw("SELECT value FROM dotvalue where drvname=? and dotname=? and time >= ? and time <= ?", drv, dot, start, stop).QueryRows(&ob)
+	if err == nil {
+		fmt.Println(ob)
+	}
+	_, err = o.Raw("SELECT time FROM dotvalue where drvname=? and dotname=? and time >= ? and time <= ?", drv, dot, start, stop).QueryRows(&obtime)
+	if err == nil {
+		fmt.Println(ob)
+	}
+	var rlt Dotvaluertl
+	rlt.Data = ob
+	rlt.Time = obtime
+	str, err := json.Marshal(rlt)
+	return string(str), err
 }
