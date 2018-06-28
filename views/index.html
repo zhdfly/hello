@@ -1,48 +1,72 @@
 [[template "top.html" .]]
 
 <!-- MAIN -->
-<div class="main">
-	<!-- MAIN CONTENT -->
-	<div class="main-content">
-		<div class="container-fluid">
-			<!-- OVERVIEW -->
-			<div id="app">
-				<div v-for="c in ob">
-					<div class="panel">
-						<div class="panel-heading">
-							<h3 class="panel-title">{{ c.User }}</h3>
-							<div class="right">
-								<button type="button" class="btn-toggle-collapse">
-									<i class="lnr lnr-chevron-up"></i>
-								</button>
-							</div>
-						</div>
-						<div class="panel-body">
-							<div class="row">
-								<div class="col-md-4" v-for="v in c.Drv">
-									<div class="metric" style="height: 150px;">
-										<span class="icon">
-											<i class="fa fa-download"></i>
-										</span>
-										<p>
-											<span class="number">{{v.Dotname}}</span>
-											<br>
-											<span class="title">数值：{{v.Value}}</span>
-										</p>
-										<br>
-										<div class="title pull-bottom">{{v.Drvname}}</div>
+<div class="content">
+	<!-- OVERVIEW -->
+	<div id="app">
+		<div>
+			<div class="panel">
+				<div class="panel-heading">
+					<h3 class="panel-title">{{ ob.User }}</h3>
+					<ul class="panel-tools">
+						<li>
+							<a class="icon expand-tool">
+								<i class="fa fa-expand"></i>
+							</a>
+						</li>
+						<li>
+							<a class="icon minimise-tool">
+								<i class="fa fa-minus"></i>
+							</a>
+						</li>
+					</ul>
+				</div>
+				<div class="panel-body">
+					<div v-for="v in ob.Drv">
+						<br>
+						<div class="title pull-bottom" style="border-left: 2px solid #2eb4dd;padding-left: 10px">{{v.Drvname}}</div>
+						<br>
+						<div class="row">
+							<div class="col-md-3 col-sm-4 col-xs-6 col-lg-2" style="margin-top: 10px;height: 150px;" v-for="x in v.Dot">
+								<div style="border-bottom: 2px solid #2eb4dd;height: 20%;background-color: #2eb4dd;color: #fff;text-align: center;vertical-align: middle">
+									{{x.Dotname}}
+								</div>
+								<!--数据显示-->
+								<div style="border: 1px solid #ccc;height: 60%;">
+									<div v-if="x.Dottype==='数值类'" style="padding: 5px;margin-top: 20px">
+										<div style="float:left;font-size: 25px;width: 60%;text-align: center">
+											{{x.Value}}
+										</div>
+										<div style="float:left;">
+											lg
+										</div>
+									</div>
+									<div v-else>
+										<div style="margin-top: 22px;text-align: center">
+											<div v-if="x.Value==='1'">
+												<input type="checkbox" checked data-toggle="toggle" data-onstyle="success">
+											</div>
+											<div v-else>
+												<input type="checkbox" data-toggle="toggle" data-onstyle="success">
+											</div>
+										</div>
 									</div>
 								</div>
+								<div style="border: 1px solid #ccc;height: 20%;text-align: right;padding-right: 5px">
+									<a href="" class="btn btn-success btn-xs">设置</a>
+									<a href="" class="btn btn-success btn-xs">历史</a>
+								</div>
 							</div>
+						</div>
+						<div>
+
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- END OVERVIEW -->
-
 		</div>
 	</div>
-	<!-- END MAIN CONTENT -->
+	<!-- END OVERVIEW -->
 </div>
 <script>
 	var tmp = JSON.parse([[.tmp]]);

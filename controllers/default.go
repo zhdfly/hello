@@ -12,8 +12,9 @@ type MainController struct {
 }
 
 func (c *MainController) Get() {
-	c.Data["name"] = "beego.me"
-	dt, len, err := tcpserver.GetRealTimeData("*")
+	c.Data["name"] = c.GetSession("loginuser")
+	fmt.Println(c.GetSession("loginuser"))
+	dt, len, err := tcpserver.GetRealTimeData(c.GetSession("loginuser"))
 	if err == nil {
 		c.Data["tmp"] = dt
 		c.Data["len"] = len
@@ -33,7 +34,7 @@ func (this *UsrController) Get() {
 	if posttype == "drvdot" {
 		rlt, _ := tcpserver.Getdrvdotinfo(this.GetString("drv"))
 		fmt.Println(rlt)
-		this.Data["name"] = "beego"
+		this.Data["name"] = this.GetSession("loginuser")
 		this.Data["drv"] = this.GetString("drv")
 		this.Data["usrdrvinfo"] = rlt
 		this.TplName = "addinfo.html"
@@ -53,34 +54,7 @@ func (this *UsrController) Post() {
 	if posttype == "dltdrvdot" {
 		rlt := tcpserver.Dltdrvdot(this.GetString("drv"), this.GetString("dotname"))
 		this.Ctx.WriteString(rlt)
-		tcpserver.Getdotinfo()
-	}
-}
-
-//自定义控制器02
-type AddnewdotinfoController struct {
-	beego.Controller
-}
-
-func (this *AddnewdotinfoController) Get() {
-	var posttype string
-	if posttype == "drvdot" {
-		rlt, _ := tcpserver.Getdrvdotinfo(this.GetString("drv"))
-		fmt.Println(rlt)
-		this.Data["name"] = "beego"
-		this.Data["usrdrvinfo"] = rlt
-		this.TplName = "addinfo.html"
-	}
-	this.TplName = "addinfo.html"
-}
-
-//实现Post方法
-func (this *AddnewdotinfoController) Post() {
-	rlt := tcpserver.Inserttodot(this.GetString("drv"), this.GetString("name"), this.GetString("dottype"), this.GetString("datatype"), this.GetString("info"))
-	if rlt == "OK" {
-		this.Ctx.WriteString("OK")
-	} else {
-		this.Ctx.WriteString("ERR")
+		tcpserver.Dltdot(this.GetString("dotname"), this.GetString("drv"))
 	}
 }
 
@@ -116,6 +90,7 @@ func (this *MagController) Post() {
 	if posttype == "usrsltdrv" {
 		tcpserver.Setusrdrv(this.GetString("usr"), this.GetString("drv"))
 		tcpserver.Getdotinfo()
+		tcpserver.Creaturl()
 	}
 	if err == nil {
 		this.Ctx.WriteString(usrjson)
@@ -165,7 +140,6 @@ func (this *DrvmagController) Post() {
 		rlt := tcpserver.InserttoDrv(this.GetString("name"), this.GetString("port"), this.GetString("types"), this.GetString("info"))
 		if rlt == "OK" {
 			this.Ctx.WriteString("OK")
-			tcpserver.Getdotinfo()
 		} else {
 			this.Ctx.WriteString("ERR")
 		}
@@ -174,7 +148,8 @@ func (this *DrvmagController) Post() {
 		rlt := tcpserver.Inserttodot(this.GetString("drv"), this.GetString("name"), this.GetString("dtype"), this.GetString("datatype"), this.GetString("info"))
 		if rlt == "OK" {
 			this.Ctx.WriteString("OK")
-			tcpserver.Getdotinfo()
+			tcpserver.Addnewdot(this.GetString("name"), this.GetString("datatype"), this.GetString("dtype"), this.GetString("drv"))
+			tcpserver.Creaturl()
 		} else {
 			this.Ctx.WriteString("ERR")
 		}

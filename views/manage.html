@@ -16,90 +16,124 @@
                     alert("两次密码输入不正确，请重新输入")
                 }
                 else {
-                    $.post("/addnewusr",
+                    $.post("/admin/addnewusr",
                         {
                             usr: name,
                             pas: $.md5(pass)
                         },
                         function (data, status) {
-                            alert("数据：" + data + "\n状态：" + status);  
+                            alert("数据：" + data + "\n状态：" + status);
                         });
                 }
             }
         });
     });
 </script>
-<div class="main">
+
+
+<div class="content">
+    <!-- Start Page Header -->
+    
+    <div class="page-header">
+        <h1 class="title">用户管理</h1>
+        <ol class="breadcrumb">
+            <li class="active">管理用户设备及用户的添加和修改</li>
+        </ol>
+
+        <!-- Start Page Header Right Div -->
+        <div class="right">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#exampleModal" data-whatever="张三">新增</button>
+            </div>
+        </div>
+        <!-- End Page Header Right Div -->
+
+    </div>
     <!-- MAIN CONTENT -->
-    <div class="main-content">
-        <div class="container-fluid">
-            <div class="panel-body no-padding" id="app">
-                <div class="panel-heading panel-title">
-                    用户管理
-                    <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#exampleModal" data-whatever="张三">新增</button>
-                </div>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th style="width: 20%">用户名称</th>
-                            <th style="width: 40%">用户信息</th>
-                            <th style="width: 20%">创建时间</th>
-                            <th style="width: 20%">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="c in ob">
-                            <td>{{c.Name}}</td>
-                            <td>{{c.Name}}</td>
-                            <td>Oct 21, 2016</td>
-                            <td class="pull-right">
-                                <button type="button" class="btn btn-success btn-xs" data-toggle="modal" data-target="#userdrvs" @click="toggle(c.Name)">管理</button>
-                                <button type="button" class="btn btn-primary btn-xs">修改</button>
-                                <button type="button" class="btn btn-danger btn-xs">删除</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <!--用户设备-->
-                <div class="modal fade" id="userdrvs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-                    <div class="modal-dialog" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">×</span>
-                                </button>
-                                <h4 class="modal-title">管理设备</h4>
-                            </div>
-                            <div class="modal-body">
-                                <form>
-                                    <div class="row metric" style="margin: 10px">
-                                        <div>已选择设备</div>
-                                        <div class="col-md-4" v-for="n in udob">
-                                            <label class="fancy-checkbox">
-                                                <input type="checkbox" name="selectdrv" :checked="true" :value="n.Drvname">
-                                                <span>{{n.Drvname}}</span>
-                                            </label>
-                                        </div>
-                                        <div class="col-md-4" v-for="n in adob">
-                                            <label class="fancy-checkbox">
-                                                <input type="checkbox" name="selectdrv" :value="n.Name">
-                                                <span>{{n.Name}}</span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                <button type="button" id="submitsltdrv" class="btn btn-primary" @click="sendsltdrv">Send message</button>
-                            </div>
+
+    <div id="app">
+        <br>
+        <div class="row">
+            <div class="col-md-4" v-for="c in ob">
+                <!--设备显示面板-->
+                <div class="panel">
+                    <div class="panel-title">
+                        <h3 class="panel-title">{{c.Name}}</h3>
+                        <ul class="panel-tools">
+                            <li>
+                                <a class="icon expand-tool">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="icon closed-tool">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="panel-body">
+                        <ul class="list-unstyled activity-timeline">
+                            <li>
+                                <i class="fa fa-users activity-icon"></i>
+                                <p>
+                                    <span class="timestamp">创建时间</span>
+                                    <!--<span class="timestamp">{{c.Time}}</span>-->
+                                </p>
+                            </li>
+
+                        </ul>
+                        <div class="pull-right">
+                            <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#userdrvs" @click="toggle(c.Name)">设备</button>
+                            <button class="btn btn-danger btn-xs">删除</button>
                         </div>
                     </div>
                 </div>
-                <!--用户设备-->
+                <!--设备显示面板-->
+            </div>
+        </div>
+        <!--用户设备-->
+        <div class="modal fade" id="userdrvs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">管理设备</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="row metric" style="margin: 10px">
+                                <div>已选择设备</div>
+                                <div class="col-md-4" v-for="n in udob">
+                                    <div class="checkbox checkbox-info checkbox-circle">
+                                        <input :id="'#/checkbox88/'+n.Drvname" type="checkbox" name="selectdrv" :checked="true" :value="n.Drvname">
+                                        <label :for="'#/checkbox88/'+n.Drvname">
+                                            {{n.Drvname}}
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4" v-for="n in adob">
+                                    <label class="fancy-checkbox">
+                                        <input type="checkbox" name="selectdrv" :value="n.Name">
+                                        <span>{{n.Name}}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="submitsltdrv" class="btn btn-primary" @click="sendsltdrv">修改</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    <!--用户设备-->
+</div>
 </div>
 <!--修改用户信息弹出框-->
 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
@@ -109,7 +143,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">×</span>
                 </button>
-                <h4 class="modal-title">New message</h4>
+                <h4 class="modal-title">添加新设备</h4>
             </div>
             <div class="modal-body">
                 <form>
@@ -129,8 +163,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" name="button" id="button" value="button" class="btn btn-primary">Send message</button>
+                <button type="button" name="button" id="button" value="button" class="btn btn-primary">添加</button>
             </div>
         </div>
     </div>
@@ -148,13 +181,13 @@
             adob: [],
             dltob: [],
             sltob: [],
-            usrname:""
+            usrname: ""
         },
         methods: {
             toggle: function (item) {
                 var self = this;
                 self.usrname = item
-                $.post("/manage",
+                $.post("/admin/manage",
                     {
                         type: "userdrv",
                         usr: item,
@@ -163,7 +196,7 @@
                         //alert("数据：" + data + "\n状态：" + status);
                         self.udob = JSON.parse(data)
                         console.log(self.udob)
-                        $.post("/manage",
+                        $.post("/admin/manage",
                             {
                                 type: "alldrv",
                                 usr: item,
@@ -179,10 +212,10 @@
                 var sltdrv = []
                 var self = this;
                 $("input[name='selectdrv']:checked").each(function (i) {//把所有被选中的复选框的值存入数组
-                    sltdrv.push({Id:0,Usrname:self.usrname,Drvname:$(this).val()})
+                    sltdrv.push({ Id: 0, Usrname: self.usrname, Drvname: $(this).val() })
                 });
                 console.log(sltdrv)
-                $.post("/manage",
+                $.post("/admin/manage",
                     {
                         type: "usrsltdrv",
                         usr: self.usrname,
@@ -191,5 +224,4 @@
             }
         }
     })
-    console.log(userdrvinfo)
 </script> [[template "bottom.html" .]]

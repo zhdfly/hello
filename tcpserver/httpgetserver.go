@@ -12,23 +12,25 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
-type ModBusDrv struct {
-	Drvname string
+type ModBusDot struct {
 	Dotname string
 	Dottype string
 	Value   string
 }
+type ModBusDrv struct {
+	Drvname string
+	Dot     []ModBusDot
+}
 type ModBusUserDrv struct {
-	User    string
-	Drvname []string
-	Drv     []ModBusDrv
+	User string
+	Drv  []ModBusDrv
 }
 
 var dotob []Dot
-var DrvDot []ModBusDrv
 var Mbdrv []ModBusUserDrv
+var MainUrl string
 
-func GetRealTimeData(name string) (string, int, error) {
+func GetRealTimeData(name interface{}) (string, int, error) {
 	index := 0
 	if name == "*" {
 		data, err := json.Marshal(Mbdrv)
@@ -41,11 +43,15 @@ func GetRealTimeData(name string) (string, int, error) {
 			break
 		}
 	}
-	data, err := json.Marshal(Mbdrv[index])
+	var data []byte
+	var err error
+	if index < len(Mbdrv) {
+		data, err = json.Marshal(Mbdrv[index])
+	}
 	//fmt.Println(data)
 	return string(data), len(data), err
 }
-func Getdotinfo() string {
+func Getdotinfo() {
 	Mbdrv = nil
 	var ob []Usr
 
@@ -53,11 +59,6 @@ func Getdotinfo() string {
 	_, err := o.Raw("SELECT * FROM dot").QueryRows(&dotob)
 	if err == nil {
 		fmt.Println(dotob)
-	}
-	for i := 0; i < len(dotob); i++ {
-		var tmp ModBusDrv
-		tmp.Dotname = dotob[i].Name
-		tmp.Drvname = dotob[i].Drv
 	}
 	_, err = o.Raw("SELECT name FROM usr").QueryRows(&ob)
 	if err == nil {
@@ -75,47 +76,41 @@ func Getdotinfo() string {
 			fmt.Println(ob)
 		}
 		for i := 0; i < len(drvnametmp); i++ {
-			Mbdrv[j].Drvname = append(Mbdrv[j].Drvname, drvnametmp[i])
+			var tmp ModBusDrv
+			tmp.Drvname = drvnametmp[i]
+			Mbdrv[j].Drv = append(Mbdrv[j].Drv, tmp)
 		}
 	}
 	for i := 0; i < len(Mbdrv); i++ {
-		for j := 0; j < len(Mbdrv[i].Drvname); j++ {
+		for j := 0; j < len(Mbdrv[i].Drv); j++ {
 			for k := 0; k < len(dotob); k++ {
-				if Mbdrv[i].Drvname[j] == dotob[k].Drv {
-					var tmpss ModBusDrv
-					tmpss.Drvname = dotob[k].Drv
+				if Mbdrv[i].Drv[j].Drvname == dotob[k].Drv {
+					var tmpss ModBusDot
 					tmpss.Dotname = dotob[k].Name
-					tmpss.Dottype = dotob[k].Dottype
-					Mbdrv[i].Drv = append(Mbdrv[i].Drv, tmpss)
+					tmpss.Dottype = dotob[k].Datatype
+					Mbdrv[i].Drv[j].Dot = append(Mbdrv[i].Drv[j].Dot, tmpss)
 				}
 			}
 		}
 	}
-	mainurl := "http://211.149.159.27:5021/html5/GETTAGVAL/"
-	// for i := 0; i < len(Mbdrv); i++ {
-	// 	for j := 0; j < len(Mbdrv[i].Drv); j++ {
-	// 		if i == 0 && j == 0 {
-	// 			mainurl = mainurl + Mbdrv[i].Drv[j].Drvname + "." + Mbdrv[i].Drv[j].Dotname
-	// 		} else {
-	// 			mainurl = mainurl + "," + Mbdrv[i].Drv[j].Drvname + "." + Mbdrv[i].Drv[j].Dotname
-	// 		}
-	// 	}
-	// }
+}
+func Creaturl() {
+	MainUrl = "http://211.149.159.27:5021/html5/GETTAGVAL/"
 	for i := 0; i < len(dotob); i++ {
 		if i == 0 {
-			mainurl = mainurl + dotob[i].Drv + "." + dotob[i].Name
+			MainUrl = MainUrl + dotob[i].Drv + "." + dotob[i].Name
 		} else {
-			mainurl = mainurl + "," + dotob[i].Drv + "." + dotob[i].Name
+			MainUrl = MainUrl + "," + dotob[i].Drv + "." + dotob[i].Name
 		}
 	}
-	return mainurl
 }
 func StarthttpGet() {
 
-	mainurl := Getdotinfo()
-	fmt.Println(mainurl)
+	Getdotinfo()
+	Creaturl()
+	fmt.Println(MainUrl)
 	for {
-		resp, err := http.Get(mainurl)
+		resp, err := http.Get(MainUrl)
 		if err != nil {
 			// handle error
 			log.Println(err)
@@ -138,9 +133,11 @@ func StarthttpGet() {
 		}
 		for i := 0; i < len(Mbdrv); i++ {
 			for j := 0; j < len(Mbdrv[i].Drv); j++ {
-				for k := 0; k < len(dotob); k++ {
-					if Mbdrv[i].Drv[j].Dotname == dotob[k].Name && Mbdrv[i].Drv[j].Drvname == dotob[k].Drv {
-						Mbdrv[i].Drv[j].Value = dotob[k].Info
+				for l := 0; l < len(Mbdrv[i].Drv[j].Dot); l++ {
+					for k := 0; k < len(dotob); k++ {
+						if Mbdrv[i].Drv[j].Dot[l].Dotname == dotob[k].Name && Mbdrv[i].Drv[j].Drvname == dotob[k].Drv {
+							Mbdrv[i].Drv[j].Dot[l].Value = dotob[k].Info
+						}
 					}
 				}
 			}

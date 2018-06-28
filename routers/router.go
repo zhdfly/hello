@@ -7,9 +7,11 @@ import (
 )
 
 func init() {
-	beego.Router("/", &controllers.MainController{})
-	beego.Router("/addinfo", &controllers.UsrController{})
-	beego.Router("/manage", &controllers.MagController{})
-	beego.Router("/addnewusr", &controllers.AddnewusrController{})
-	beego.Router("/drvmag", &controllers.DrvmagController{})
+	beego.Router("/admin", &controllers.MainController{})
+	beego.Router("/admin/addinfo", &controllers.UsrController{})
+	beego.Router("/admin/manage", &controllers.MagController{})
+	beego.Router("/admin/drvmag", &controllers.DrvmagController{})
+	beego.Router("/admin/video", &controllers.VideoController{})
+	beego.Router("/login", &controllers.LoginController{})
+	beego.Router("/usershow", &controllers.UsershowController{})
 }

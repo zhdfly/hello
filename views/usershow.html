@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en" class="fullscreen-bg">
+
+<head>
+    <title>Login</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> [[template "cssjs.html" .]]
+
+</head>
+
+<body>
+    <!-- START TOP -->
+    <div id="top" class="clearfix">
+
+        <!-- Start App Logo -->
+        <div class="applogo">
+            <a href="/usershow" class="logo">龙腾伟业</a>
+        </div>
+        <!-- End App Logo -->
+
+        <!-- Start Top Right -->
+        <ul class="top-right">
+            <li class="dropdown link">
+                <a href="#" data-toggle="dropdown" class="dropdown-toggle profilebox">
+                    <img src="../static/img/profileimg.png" alt="img">
+                    <b>[[.name]]</b>
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-list dropdown-menu-right">
+                    <li role="presentation" class="dropdown-header">Profile</li>
+                    <li>
+                        <a href="#">
+                            <i class="fa falist fa-inbox"></i>Inbox
+                            <span class="badge label-danger">4</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa falist fa-file-o"></i>Files</a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa falist fa-wrench"></i>Settings</a>
+                    </li>
+                    <li class="divider"></li>
+                    <li>
+                        <a href="#">
+                            <i class="fa falist fa-lock"></i> Lockscreen</a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa falist fa-power-off"></i> Logout</a>
+                    </li>
+                </ul>
+            </li>
+
+        </ul>
+        <!-- End Top Right -->
+
+    </div>
+    <!-- END TOP -->
+    <div style="background-color: #fff;padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 80px;" id="app">
+        <!--导航-->
+
+        <div class="bt">总体预览</div>
+        <div v-for="v in ob.Drv">
+            <br>
+            <div class="title pull-bottom" style="border-left: 2px solid #2eb4dd;padding-left: 10px">{{v.Drvname}}</div>
+            <br>
+            <div class="row">
+                <div class="col-md-3 col-sm-4 col-xs-6 col-lg-2" style="margin-top: 10px;height: 150px;" v-for="x in v.Dot">
+                    <div style="border-bottom: 2px solid #2eb4dd;height: 20%;background-color: #2eb4dd;color: #fff;text-align: center;vertical-align: middle">
+                        {{x.Dotname}}
+                    </div>
+                    <!--数据显示-->
+                    <div style="border: 1px solid #ccc;height: 60%;">
+                        <div v-if="x.Dottype==='数值类'" style="padding: 5px;margin-top: 20px">
+                            <div style="float:left;font-size: 25px;width: 60%;text-align: center">
+                                {{x.Value}}
+                            </div>
+                            <div style="float:left;">
+                                lg
+                            </div>
+                        </div>
+                        <div v-else>
+                            <div style="margin-top: 22px;text-align: center">
+                                <div v-if="x.Value==='1'">
+                                    <input type="checkbox" checked data-toggle="toggle" data-onstyle="success">
+                                </div>
+                                <div v-else>
+                                    <input type="checkbox" data-toggle="toggle" data-onstyle="success">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="border: 1px solid #ccc;height: 20%;text-align: right;padding-right: 5px">
+                        <a href="" class="btn btn-success btn-xs">设置</a>
+                        <a href="" class="btn btn-success btn-xs">历史</a>
+                    </div>
+                </div>
+            </div>
+            <div>
+
+            </div>
+        </div>
+        <!-- END MAIN CONTENT -->
+    </div>
+    </div>
+</body>
+<script>
+    var tmp = JSON.parse([[.tmp]]);
+    console.log([[.tmp]])
+    new Vue({
+        el: '#app',
+        data: {
+            ob: tmp
+        }
+    })
+    console.log(tmp)
+</script>
+
+</html>
