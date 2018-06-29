@@ -148,6 +148,7 @@ func (this *DrvmagController) Get() {
 //实现Post方法
 func (this *DrvmagController) Post() {
 	var posttype = this.GetString("type")
+	beego.Info(posttype)
 	if posttype == "creatnewdrv" {
 		rlt := tcpserver.InserttoDrv(this.GetString("name"), this.GetString("port"), this.GetString("types"), this.GetString("info"))
 		if rlt == "OK" {

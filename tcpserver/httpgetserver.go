@@ -28,7 +28,8 @@ type ModBusUserDrv struct {
 
 var dotob []Dot
 var Mbdrv []ModBusUserDrv
-var MainUrl string
+var MainUrl []string
+var Urlpacknum int
 
 func GetRealTimeData(name interface{}) (string, int, error) {
 	index := 0
@@ -95,22 +96,43 @@ func Getdotinfo() {
 	}
 }
 func Creaturl() {
-	MainUrl = "http://211.149.159.27:5021/html5/GETTAGVAL/"
-	for i := 0; i < len(dotob); i++ {
-		if i == 0 {
-			MainUrl = MainUrl + dotob[i].Drv + "." + dotob[i].Name
+	MainUrl = nil
+	var dotnum = len(dotob)
+	var Urlpacknum = dotnum/10 + 1
+	for p := 0; p < Urlpacknum; p++ {
+		url := "http://211.149.159.27:5021/html5/GETTAGVAL/"
+		if (dotnum - p*10) >= 10 {
+			for i := 0; i < 10; i++ {
+				if i == 0 {
+					url = url + dotob[p*10+i].Drv + "." + dotob[p*10+i].Name
+				} else {
+					url = url + "," + dotob[p*10+i].Drv + "." + dotob[p*10+i].Name
+				}
+			}
 		} else {
-			MainUrl = MainUrl + "," + dotob[i].Drv + "." + dotob[i].Name
+			for i := 0; i < (dotnum - p*10); i++ {
+				if i == 0 {
+					url = url + dotob[p*10+i].Drv + "." + dotob[p*10+i].Name
+				} else {
+					url = url + "," + dotob[p*10+i].Drv + "." + dotob[p*10+i].Name
+				}
+			}
 		}
+		MainUrl = append(MainUrl, url)
 	}
+	fmt.Println(MainUrl)
 }
 func StarthttpGet() {
-
+	Getindex := 0
 	Getdotinfo()
 	Creaturl()
 	fmt.Println(MainUrl)
 	for {
-		resp, err := http.Get(MainUrl)
+		if Getindex == len(MainUrl) {
+			Getindex = 0
+			time.Sleep(3e10)
+		}
+		resp, err := http.Get(MainUrl[Getindex])
 		if err != nil {
 			// handle error
 			log.Println(err)
@@ -129,9 +151,10 @@ func StarthttpGet() {
 		strresult := string(buf.Bytes())
 		strs := strings.Split(strresult, "|")
 		for n := 0; n < len(strs); n++ {
-			insertValue(n, strs[n])
+			insertValue(n+Getindex*10, strs[n])
+
 		}
-		for n := 0; n < len(dotob); n++ {
+		for n := Getindex * 10; n < len(dotob); n++ {
 			//Inserttodotvalue(dotob[n].Drv, dotob[n].Name, dotob[n].Val, "OK")
 			var tmpdot Dotvalue
 			tmpdot.Drvname = dotob[n].Drv
@@ -152,8 +175,9 @@ func StarthttpGet() {
 				}
 			}
 		}
+		Getindex = Getindex + 1
 		//fmt.Println(strs)
-		time.Sleep(3e10)
+
 	}
 }
 func insertValue(index int, data string) {

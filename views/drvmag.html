@@ -5,27 +5,7 @@
     });
     $(document).ready(function () {
         $("#button").on("click", function () {
-            var name = $("#drv-name").val();
-            var port = $("#drv-port").val();
-            var types = $("#drv-type").val();
-            var info = $("#drv-info").val();
-            if (name.length < 2) {
-                alert("设备名称长度必须大于2")
-            }
-            else {
-                $.post("/admin/drvmag",
-                    {
-                        type: "creatnewdrv",
-                        name: name,
-                        port: port,
-                        types: types,
-                        info: info
-                    },
-                    function (data, status) {
-                        alert("数据：" + data + "\n状态：" + status);
-                    });
 
-            }
         });
     });
 </script>
@@ -58,17 +38,17 @@
                     <div class="panel-title">
                         <h3 class="panel-title">{{c.Name}}</h3>
                         <ul class="panel-tools">
-                                <li>
-                                    <a class="icon expand-tool">
-                                        <i class="fa fa-expand"></i>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="icon closed-tool">
-                                        <i class="fa fa-times"></i>
-                                    </a>
-                                </li>
-                            </ul>
+                            <li>
+                                <a class="icon expand-tool">
+                                    <i class="fa fa-expand"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="icon closed-tool">
+                                    <i class="fa fa-times"></i>
+                                </a>
+                            </li>
+                        </ul>
 
                     </div>
                     <div class="panel-body">
@@ -110,45 +90,46 @@
                 </div>
             </div>
         </div>
-    </div>
-
-    <!--修改用户信息弹出框-->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title">新建设备</h4>
-                </div>
-                <div class="modal-body">
-                    <form>
-                        <div class="form-group">
-                            <label for="recipient-name" class="control-label">设备名称</label>
-                            <input type="text" class="form-control" id="drv-name">
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="control-label">服务端口</label>
-                            <input type="text" class="form-control" id="drv-port" value="2020"></input>
-                        </div>
-                        <div class="form-group">
-                            <label for="message-text" class="control-label">协议类型</label>
-                            <input type="text" class="form-control " id="drv-type" value="MODBUS"></input>
-                        </div>
-                        <div>设备说明</div>
-                        <textarea class="form-control" placeholder="textarea" rows="4" id="drv-info"></textarea>
-                        <br>
-                    </form>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="button" name="button" id="button" value="button" class="btn btn-primary">Send message</button>
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">新建设备</h4>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <label for="recipient-name" class="control-label">设备名称</label>
+                                <input type="text" class="form-control" id="drv-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">服务端口</label>
+                                <input type="text" class="form-control" id="drv-port" value="2020"></input>
+                            </div>
+                            <div class="form-group">
+                                <label for="message-text" class="control-label">协议类型</label>
+                                <input type="text" class="form-control " id="drv-type" value="MODBUS"></input>
+                            </div>
+                            <div>设备说明</div>
+                            <textarea class="form-control" placeholder="textarea" rows="4" id="drv-info"></textarea>
+                            <br>
+                        </form>
+                    </div>
+    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="button" @click="addnewdrv" class="btn btn-primary">Send message</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!--修改用户信息弹出框-->
+    
     <!--修改用户信息弹出框-->
     <script>
         var tmp = JSON.parse([[.usrdrvinfo]]);
@@ -168,6 +149,29 @@
                             type: "drvdot",
                             drv: drv,
                         })
+                },
+                addnewdrv: function () {
+                    var name = $("#drv-name").val();
+                    var port = $("#drv-port").val();
+                    var types = $("#drv-type").val();
+                    var info = $("#drv-info").val();
+                    if (name.length < 2) {
+                        alert("设备名称长度必须大于2")
+                    }
+                    else {
+                        $.post("/admin/drvmag",
+                            {
+                                type: "creatnewdrv",
+                                name: name,
+                                port: port,
+                                types: types,
+                                info: info
+                            },
+                            function (data, status) {
+                                alert("数据：" + data + "\n状态：" + status);
+                            });
+
+                    }
                 },
                 adddrvdot: function () {
                     var self = this;

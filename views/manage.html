@@ -117,10 +117,12 @@
                                 </div>
 
                                 <div class="col-md-4" v-for="n in adob">
-                                    <label class="fancy-checkbox">
-                                        <input type="checkbox" name="selectdrv" :value="n.Name">
-                                        <span>{{n.Name}}</span>
-                                    </label>
+                                    <div class="checkbox checkbox-info checkbox-circle">
+                                        <input :id="'#/checkbox88/'+n.Name" type="checkbox" name="selectdrv" :value="n.Name">
+                                        <label :for="'#/checkbox88/'+n.Name">
+                                            {{n.Name}}
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </form>

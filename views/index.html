@@ -76,21 +76,18 @@
 							</h4>
 						</div>
 						<div class="modal-body">
-							<div>
-								<form class="form-horizontal">
-									<fieldset>
-										<div class="control-group">
-											<div class="controls">
-												<div class="input-prepend input-group">
-													<span class="add-on input-group-addon">
-														<i class="fa fa-calendar"></i>
-													</span>
-													<input type="text" id="date-picker" class="form-control" value="03/18/2015" />
-												</div>
-											</div>
-										</div>
-									</fieldset>
-								</form>
+							<div class="row">
+								<div class="col-sm-4">
+									起始时间：
+									<input type='text' class='form-control selectData' id='datestart' name='date'>
+								</div>
+								<div class="col-sm-4">
+									结束时间：
+									<input type='text' class='form-control selectData' id='datestop' name='date'>
+								</div>
+								<div class="col-sm-4">
+									<button type="button" class="btn btn-success" @click="getvalue('S','S')">查询</a>
+								</div>
 							</div>
 							<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
 							<div id="main" style="width: 500px;height:400px;"></div>
@@ -107,19 +104,32 @@
 	new Vue({
 		el: '#app',
 		data: {
-			ob: tmp
+			ob: tmp,
+			drv: "",
+			dot: ""
 		},
 		methods: {
 			getvalue: function (drv, dot) {
 				var self = this;
-				$("#valuetitle").text(drv + ":" + dot + "  历史数据")
+				if (drv == "S" && dot == "S") { }
+				else {
+					self.drv = drv
+					self.dot = dot
+				}
+				if ($("#datestart").val() == "") {
+					var starttime = new Date(new Date().getTime())
+					var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+					$("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
+					$("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
+				}
+				$("#valuetitle").text(self.drv + ":" + self.dot + "  历史数据")
 				$.post("/admin/",
 					{
 						type: "dotvalue",
-						drv: drv,
-						dot: dot,
-						start: new Date().toLocaleDateString(),
-						stop: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toDateString()
+						drv: self.drv,
+						dot: self.dot,
+						start: $("#datestart").val(),
+						stop: $("#datestop").val()
 					},
 					function (data, status) {
 						myChart.setOption({
@@ -178,18 +188,51 @@
 	});
 	//浏览器大小改变时重置大小
 	window.onresize = function () {
-		myChartContainer();
-		myChart.resize();
+		//myChartContainer();
+		//myChart.resize();
 	};
+	$.fn.datepicker.dates['cn'] = {   //切换为中文显示
+		days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
+		daysShort: ["日", "一", "二", "三", "四", "五", "六", "七"],
+		daysMin: ["日", "一", "二", "三", "四", "五", "六", "七"],
+		months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+		monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
+		today: "今天",
+		clear: "清除"
+	};
+
+	$('.selectData').datepicker({
+		autoclose: true, //自动关闭
+		beforeShowDay: $.noop,    //在显示日期之前调用的函数
+		calendarWeeks: false,     //是否显示今年是第几周
+		clearBtn: false,          //显示清除按钮
+		daysOfWeekDisabled: [],   //星期几不可选
+		endDate: Infinity,        //日历结束日期
+		forceParse: true,         //是否强制转换不符合格式的字符串
+		format: 'yyyy-mm-dd',     //日期格式
+		keyboardNavigation: true, //是否显示箭头导航
+		language: 'cn',           //语言
+		minViewMode: 0,
+		orientation: "auto",      //方向
+		rtl: false,
+		startDate: -Infinity,     //日历开始日期
+		startView: 0,             //开始显示
+		todayBtn: false,          //今天按钮
+		todayHighlight: false,    //今天高亮
+		weekStart: 0              //星期几是开始
+	});
 
 	console.log(tmp)
 </script>
 <!-- Basic Single Date Picker -->
 <script type="text/javascript">
-	$(document).ready(function() {
-	  $('#date-picker').daterangepicker({ singleDatePicker: true }, function(start, end, label) {
-		console.log(start.toISOString(), end.toISOString(), label);
-	  });
+	$('#userdrvs').on('show.bs.modal', function (event) {
+		var starttime = new Date(new Date().getTime())
+		var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
+		$("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
+		$("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
+
 	});
-	</script>
+
+</script>
 <!-- END MAIN -->

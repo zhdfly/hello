@@ -52,7 +52,7 @@ func ConfigSQL() {
 
 	orm.RegisterDataBase("default", "mysql", "root:zhd1021@tcp(127.0.0.1:3306)/maingo?charset=utf8&loc=Local")
 
-	orm.Debug = true
+	//orm.Debug = true
 }
 func Inserttousr(usr string, pass string) string {
 	o := orm.NewOrm()

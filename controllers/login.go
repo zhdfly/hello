@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"GOGP/library/common"
+	"crypto/md5"
 	"fmt"
 	"hello/tcpserver"
 	"time"
@@ -39,7 +39,7 @@ func (c *LoginController) Post() {
 			islogin = "YES"
 		}
 		c.SetSession("loginuser", name)
-		c.SetSession(name, common.Md5String(name+common.GetString(time.Now().Unix())))
+		c.SetSession(name, md5.Sum([]byte(name+time.Now().Format("2006-01-02 15:04:05"))))
 		c.Ctx.SetCookie("name", name, 1800, "/")
 		c.Ctx.SetCookie(name, name, 1800, "/")
 		c.Ctx.WriteString(islogin)
