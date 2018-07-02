@@ -92,3 +92,23 @@ func Dltuser(name string) {
 		}
 	}
 }
+func SetDotWarningPara(name string, drv string, top float32, bot float32) {
+	for i := 0; i < len(Mbdrv); i++ {
+		for j := 0; j < len(Mbdrv[i].Drv); j++ {
+			if drv == Mbdrv[i].Drv[j].Drvname {
+				for k := 0; k < len(Mbdrv[i].Drv[j].Dot); k++ {
+					if name == Mbdrv[i].Drv[j].Dot[k].Dotname {
+						Mbdrv[i].Drv[j].Dot[k].Dotwarningbot = bot
+						Mbdrv[i].Drv[j].Dot[k].Dotwarningtop = top
+					}
+				}
+			}
+		}
+	}
+	for i := 0; i < len(dotob); i++ {
+		if dotob[i].Name == name && dotob[i].Drv == drv {
+			dotob[i].Warningtop = top
+			dotob[i].Warningbot = bot
+		}
+	}
+}

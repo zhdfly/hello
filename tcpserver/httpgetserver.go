@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,17 +14,27 @@ import (
 )
 
 type ModBusDot struct {
-	Dotname string
-	Dottype string
-	Value   string
+	Dotname       string
+	Dottype       string
+	Dotwarningtop float32
+	Dotwarningbot float32
+	Dotstatus     string
+	Value         float32
 }
 type ModBusDrv struct {
-	Drvname string
-	Dot     []ModBusDot
+	Drvname   string
+	Sensornum int
+	IOnum     int
+	Logicnum  int
+	Videonum  int
+	Flashtime string
+	Dot       []ModBusDot
 }
 type ModBusUserDrv struct {
 	User string
 	Drv  []ModBusDrv
+}
+type DrvBaseInfo struct {
 }
 
 var dotob []Dot
@@ -50,6 +61,28 @@ func GetRealTimeData(name interface{}) (string, int, error) {
 		data, err = json.Marshal(Mbdrv[index])
 	}
 	//fmt.Println(data)
+	return string(data), len(data), err
+}
+func GetDrvRealTimeData(user string, drv string) (string, int, error) {
+	index := 0
+	drvindex := 0
+	for index = 0; index < len(Mbdrv); index++ {
+		if Mbdrv[index].User == user {
+			for drvindex = 0; drvindex < len(Mbdrv[index].Drv); drvindex++ {
+				if Mbdrv[index].Drv[drvindex].Drvname == drv {
+					break
+				}
+			}
+			break
+		}
+	}
+	var data []byte
+	var err error
+	if index < len(Mbdrv) && drvindex < len(Mbdrv[index].Drv) {
+		data, err = json.Marshal(Mbdrv[index].Drv[drvindex])
+		fmt.Println(err)
+	}
+	fmt.Println(index, drvindex, user, drv, data)
 	return string(data), len(data), err
 }
 func Getdotinfo() {
@@ -89,6 +122,13 @@ func Getdotinfo() {
 					var tmpss ModBusDot
 					tmpss.Dotname = dotob[k].Name
 					tmpss.Dottype = dotob[k].Datatype
+					tmpss.Dotwarningtop = dotob[k].Warningtop
+					tmpss.Dotwarningbot = dotob[k].Warningbot
+					if tmpss.Dottype == "数值类" {
+						Mbdrv[i].Drv[j].Sensornum = Mbdrv[i].Drv[j].Sensornum + 1
+					} else {
+						Mbdrv[i].Drv[j].IOnum = Mbdrv[i].Drv[j].IOnum + 1
+					}
 					Mbdrv[i].Drv[j].Dot = append(Mbdrv[i].Drv[j].Dot, tmpss)
 				}
 			}
@@ -152,7 +192,6 @@ func StarthttpGet() {
 		strs := strings.Split(strresult, "|")
 		for n := 0; n < len(strs); n++ {
 			insertValue(n+Getindex*10, strs[n])
-
 		}
 		for n := Getindex * 10; n < len(dotob); n++ {
 			//Inserttodotvalue(dotob[n].Drv, dotob[n].Name, dotob[n].Val, "OK")
@@ -161,6 +200,13 @@ func StarthttpGet() {
 			tmpdot.Dotname = dotob[n].Name
 			tmpdot.Value = dotob[n].Val
 			tmpdot.Status = "OK"
+			if dotob[n].Warningtop != dotob[n].Warningbot && dotob[n].Val > dotob[n].Warningtop {
+				tmpdot.Status = "TOP"
+			}
+			if dotob[n].Warningtop != dotob[n].Warningbot && dotob[n].Val < dotob[n].Warningbot {
+				tmpdot.Status = "BOT"
+			}
+
 			tmpdot.Time = time.Now().Format("2006-01-02 15:04:05")
 			Inserttodotvalue(tmpdot)
 		}
@@ -170,6 +216,12 @@ func StarthttpGet() {
 					for k := 0; k < len(dotob); k++ {
 						if Mbdrv[i].Drv[j].Dot[l].Dotname == dotob[k].Name && Mbdrv[i].Drv[j].Drvname == dotob[k].Drv {
 							Mbdrv[i].Drv[j].Dot[l].Value = dotob[k].Val
+							if Mbdrv[i].Drv[j].Dot[l].Dotwarningtop != Mbdrv[i].Drv[j].Dot[l].Dotwarningbot && Mbdrv[i].Drv[j].Dot[l].Value > Mbdrv[i].Drv[j].Dot[l].Dotwarningtop {
+								Mbdrv[i].Drv[j].Dot[l].Dotstatus = "TOP"
+							}
+							if Mbdrv[i].Drv[j].Dot[l].Dotwarningtop != Mbdrv[i].Drv[j].Dot[l].Dotwarningbot && Mbdrv[i].Drv[j].Dot[l].Value < Mbdrv[i].Drv[j].Dot[l].Dotwarningbot {
+								Mbdrv[i].Drv[j].Dot[l].Dotstatus = "BOT"
+							}
 						}
 					}
 				}
@@ -186,7 +238,12 @@ func insertValue(index int, data string) {
 	if len(strd) != 2 {
 		return
 	}
-	dotob[index].Val = strd[1]
+	v, err := strconv.ParseFloat(strd[1], 32)
+	if err != nil {
+		dotob[index].Val = 0
+	} else {
+		dotob[index].Val = float32(v)
+	}
 	// for i := 0; i < len(dotob); i++ {
 	// 	if deindex == index {
 	// 		//if Mbdrv[i].Drv[j].Dottype == strd[0] {

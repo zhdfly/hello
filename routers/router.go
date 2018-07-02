@@ -12,6 +12,7 @@ func init() {
 	beego.Router("/admin/manage", &controllers.MagController{})
 	beego.Router("/admin/drvmag", &controllers.DrvmagController{})
 	beego.Router("/admin/video", &controllers.VideoController{})
+	beego.Router("/admin/drvshow", &controllers.DrvshowController{})
 	beego.Router("/login", &controllers.LoginController{})
 	beego.Router("/usershow", &controllers.UsershowController{})
 }

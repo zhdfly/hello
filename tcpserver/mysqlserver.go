@@ -3,6 +3,7 @@ package tcpserver
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/astaxie/beego/orm"
@@ -23,13 +24,15 @@ type Drv struct {
 	Time string
 }
 type Dot struct {
-	Id       int
-	Name     string
-	Dottype  string
-	Datatype string
-	Info     string
-	Val      string
-	Drv      string
+	Id         int
+	Name       string
+	Dottype    string
+	Datatype   string
+	Info       string
+	Val        float32
+	Drv        string
+	Warningtop float32
+	Warningbot float32
 }
 type Usrdrv struct {
 	Id      int
@@ -40,7 +43,7 @@ type Dotvalue struct {
 	Id      int
 	Drvname string
 	Dotname string
-	Value   string
+	Value   float32
 	Status  string
 	Time    string
 }
@@ -216,4 +219,21 @@ func Getdotvalue(drv string, dot string, start string, stop string) (string, err
 	rlt.Time = obtime
 	str, err := json.Marshal(rlt)
 	return string(str), err
+}
+func Setdotwarning(drv string, dot string, top string, bot string) (string, error) {
+	o := orm.NewOrm()
+	t, err := strconv.ParseFloat(top, 32)
+	if err != nil {
+		return "ERR", err
+	}
+	b, err := strconv.ParseFloat(bot, 32)
+	if err != nil {
+		return "ERR", err
+	}
+	_, err = o.Raw("UPDATE dot SET warningtop = ?,warningbot = ? where name = ? and drv = ?", top, bot, dot, drv).Exec()
+	if err == nil {
+		SetDotWarningPara(dot, drv, float32(t), float32(b))
+		return "OK", err
+	}
+	return "ERR", err
 }
