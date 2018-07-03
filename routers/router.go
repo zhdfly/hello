@@ -15,4 +15,5 @@ func init() {
 	beego.Router("/admin/drvshow", &controllers.DrvshowController{})
 	beego.Router("/login", &controllers.LoginController{})
 	beego.Router("/usershow", &controllers.UsershowController{})
+	beego.Router("/usershowdrv", &controllers.UsershowdrvController{})
 }

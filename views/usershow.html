@@ -67,45 +67,46 @@
 
         <div class="bt">总体预览</div>
         <div v-for="v in ob.Drv">
-            <br>
-            <div class="title pull-bottom" style="border-left: 2px solid #2eb4dd;padding-left: 10px">{{v.Drvname}}</div>
-            <br>
-            <div class="row">
-                <div class="col-md-3 col-sm-4 col-xs-6 col-lg-2" style="margin-top: 10px;height: 150px;" v-for="x in v.Dot">
-                    <div style="border-bottom: 2px solid #2eb4dd;height: 20%;background-color: #2eb4dd;color: #fff;text-align: center;vertical-align: middle">
-                        {{x.Dotname}}
+            <div style="border: 1px solid #399bff;">
+                <div style="height: 30px;background-color: #399bff;padding-left: 10px;vertical-align: middle">
+                    <div style="text-align: left;width: 30%;float: left;position:absolute;line-height:30px">
+                        {{v.Drvname}}
                     </div>
-                    <!--数据显示-->
-                    <div style="border: 1px solid #ccc;height: 60%;">
-                        <div v-if="x.Dottype==='数值类'" style="padding: 5px;margin-top: 20px">
-                            <div style="float:left;font-size: 25px;width: 60%;text-align: center">
-                                {{x.Value}}
-                            </div>
-                            <div style="float:left;">
-                                lg
-                            </div>
-                        </div>
-                        <div v-else>
-                            <div style="margin-top: 22px;text-align: center">
-                                <div v-if="x.Value==='1'">
-                                    <input type="checkbox" checked data-toggle="toggle" data-onstyle="success">
-                                </div>
-                                <div v-else>
-                                    <input type="checkbox" data-toggle="toggle" data-onstyle="success">
-                                </div>
-                            </div>
-                        </div>
+                    <div style="text-align: right;width: 30%;float: left;position:absolute;right: 5%;line-height:30px">
+                        <a type="button" :href="'/usershowdrv?user='+ob.User+'&drv=' + v.Drvname" style="color:#fff;">查看详细信息</a>
                     </div>
-                    <div style="border: 1px solid #ccc;height: 20%;text-align: right;padding-right: 5px">
-                        <a href="" class="btn btn-success btn-xs">设置</a>
-                        <a href="" class="btn btn-success btn-xs">历史</a>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 30px;margin-top: 10px;margin-bottom: 10px;border-right: 1px solid #bacdd3;width: 25%">
+                        <div style="text-align: center;font-size: 18px;">传感节点</div>
+                        <br>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px">数量：{{v.Sensornum}}个</div>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px"> 更新时间：15点15分</div>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px"> 报警信息：无</div>
+                    </div>
+                    <div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 10px;margin-top: 10px;margin-bottom: 10px;border-right: 1px solid #bacdd3;width: 25%">
+                        <div style="text-align: center;font-size: 18px;">动作节点</div>
+                        <br>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px">控制器节点：{{v.IOnum}}个</div>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px"> 更新时间：15点15分</div>
+                    </div>
+                    <div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 10px;margin-top: 10px;margin-bottom: 10px;border-right: 1px solid #bacdd3;width: 25%">
+                        <div style="text-align: center;font-size: 18px;">联锁控制器</div>
+                        <br>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px">联锁控制器：{{v.Logicnum}}个</div>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px">正在运行：0个</div>
+                    </div>
+                    <div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 10px;margin-top: 10px;margin-bottom: 10px;width: 25%">
+                        <div style="text-align: center;font-size: 18px;">监控设备</div>
+                        <br>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px">监控设备：{{v.Videonum}}个</div>
+                        <div style="line-height: 28px;font-size: 15px;padding-left: 10px">在线数量：0个</div>
                     </div>
                 </div>
             </div>
-            <div>
-
-            </div>
+            <br>
         </div>
+        
         <!-- END MAIN CONTENT -->
     </div>
     </div>

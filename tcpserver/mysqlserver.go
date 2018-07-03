@@ -47,11 +47,22 @@ type Dotvalue struct {
 	Status  string
 	Time    string
 }
+type Videodrv struct {
+	Id          int
+	Name        string
+	Appkey      string
+	Appsecret   string
+	Accesstoken string
+	Sn          string
+	Vercode     string
+	Drv         string
+	Liveurl     string
+}
 
 func ConfigSQL() {
 	orm.RegisterDriver("mysql", orm.DRMySQL)
 
-	orm.RegisterModel(new(Usr), new(Drv), new(Dot), new(Usrdrv), new(Dotvalue))
+	orm.RegisterModel(new(Usr), new(Drv), new(Dot), new(Usrdrv), new(Dotvalue), new(Videodrv))
 
 	orm.RegisterDataBase("default", "mysql", "root:zhd1021@tcp(127.0.0.1:3306)/maingo?charset=utf8&loc=Local")
 

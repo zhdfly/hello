@@ -70,7 +70,7 @@ func (c *DrvshowController) Get() {
 	} else {
 		c.Data["tmp"] = "Error!!!"
 	}
-
+	c.Data["video"], err = tcpserver.Getdrvvedio(d)
 	c.TplName = "drvshow.html"
 }
 func (this *DrvshowController) Post() {

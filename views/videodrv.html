@@ -1,5 +1,5 @@
 [[template "top.html" .]]
-<div class="content">
+<div class="content" id="app">
     <!-- MAIN CONTENT -->
     <!-- Start Page Header -->
     <div class="page-header">
@@ -11,13 +11,13 @@
         <!-- Start Page Header Right Div -->
         <div class="right">
             <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default pull-right" @click="getlivelist">新增</button>
+                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#newvideo" @click="getdrvlist">新增</button>
             </div>
         </div>
         <!-- End Page Header Right Div -->
 
     </div>
-    <div class="row" id="app">
+    <div class="row">
         <div class="col-md-4">
             <br>
             <video id="myPlayer" width=320 height=180 class="video-js vjs-default-skin" controls autoplay>
@@ -34,6 +34,43 @@
         </div>
     </div>
     <br>
+    <div class="modal fade" id="newvideo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title">添加监控设备</h4>
+                </div>
+                <div class="modal-body">
+                        <div>名称</div>
+                        <input type="text" class="form-control" placeholder="text field" id="videoname">
+                        <br>
+                    <div>appKey</div>
+                    <input type="text" class="form-control" placeholder="text field" id="videoappkey">
+                    <br>
+                    <div>appSecret</div>
+                    <input type="text" class="form-control" placeholder="text field" id="videoappsecret">
+                    <br>
+                    <div>设备SN</div>
+                    <input type="text" class="form-control" placeholder="text field" id="videosn">
+                    <br>
+                    <div>设备验证码</div>
+                    <input type="text" class="form-control" placeholder="text field" id="videonum">
+                    <br>
+                    <div>隶属设备</div>
+                    <select class="form-control" id="drv">
+                        <option value="数值类" v-for="o in adob">{{o.Drvname}}</option>
+                    </select>
+                    <br>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="submitsltdrv" class="btn btn-primary" @click="addnewvideo">添加</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- END MAIN CONTENT -->
 </div>
 <script>
@@ -42,21 +79,70 @@
         el: '#app',
         data: {
             ob: tmp,
-            drvname: [[.drv]],
+            user: [[.user]],
             ddob: [],
+            adob: []
         },
         methods: {
-            getlivelist: function (drv) {
+            addnewvideo: function () {
                 var self = this
-                $.post("/admin/addinfo",
+                name = $("#videoname").text()
+                key = $("#videoappkey").text()
+                access = $("#videoappsecret").text()
+                sn = $("#videosn").text()
+                ver = $("#videonum").text()
+                drv = $("#drv").text()
+                if(name.lenght() < 2)
+                {
+                    alert("名称长度必须大于2")
+                    return
+                }
+                if(key.lenght() != 32)
+                {
+                    alert("appKey输入不正确")
+                    return
+                }
+                if(access.lenght() != 32)
+                {
+                    alert("appAccess输入不正确")
+                    return
+                }
+                if(sn.lenght() < 2)
+                {
+                    alert("设备SN输入不正确")
+                    return
+                }
+                if(ver.lenght() < 2)
+                {
+                    alert("设备验证码输入不正确")
+                    return
+                }
+                $.post("/admin/video",
                     {
-                        type: "drvdot",
-                        drv: drv,
+                        type: "newvideo",
+                        name:name,
+                        key:key,
+                        access:access,
+                        sn:sn,
+                        ver:ver,
+                        drv:drv
                     },
                     function (data, status) {
-
-                        self.ob = JSON.parse(data)
+                        alert(data)
                     });
+            },
+            getdrvlist: function () {
+                var self = this
+                $.post("/admin/manage",
+                    {
+                        type: "userdrv",
+                        usr: self.user,
+                    },
+                    function (data, status) {
+                        //alert("数据：" + data + "\n状态：" + status);
+                        self.adob = JSON.parse(data)
+                        console.log(self.adob)
+                    })
             }
         }
     })

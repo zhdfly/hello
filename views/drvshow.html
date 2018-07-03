@@ -92,6 +92,26 @@
                             </div>
                         </div>
                     </div>
+                    <div v-if="ob.Videonum > 0">
+                        <br>
+                        <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
+                            监控设备
+                        </div>
+                        <br>
+                        <div class="col-md-6">
+                            <div style="margin-top: 10px;height: 240px;" v-for="v in vob">
+                                <div style="border-bottom: 2px solid #399bff;height: 20%;background-color: #399bff;color: #fff;text-align: center;vertical-align: middle">
+                                    {{v.Name}}
+                                </div>
+                                <!--数据显示-->
+                                <div style="border: 1px solid #ccc;height: 80%;text-align: center;">
+                                    <video id="myPlayer" width=100% height=100% class="video-js vjs-default-skin" controls autoplay>
+                                        <source v-bind:src="v.Liveurl" type="application/x-mpegURL">
+                                    </video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal fade" id="userdrvs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
@@ -174,7 +194,8 @@
         data: {
             ob: tmp,
             drv: "",
-            dot: ""
+            dot: "",
+            vob: JSON.parse([[.video]])
         },
         methods: {
             setwarningwin: function (top, bot, drv, dot) {
@@ -323,6 +344,6 @@
         $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
 
     });
-
+    new EZUIPlayer('myPlayer');
 </script>
 <!-- END MAIN -->

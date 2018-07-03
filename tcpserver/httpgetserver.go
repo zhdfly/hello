@@ -82,7 +82,7 @@ func GetDrvRealTimeData(user string, drv string) (string, int, error) {
 		data, err = json.Marshal(Mbdrv[index].Drv[drvindex])
 		fmt.Println(err)
 	}
-	fmt.Println(index, drvindex, user, drv, data)
+	//fmt.Println(index, drvindex, user, drv, data)
 	return string(data), len(data), err
 }
 func Getdotinfo() {
@@ -112,6 +112,7 @@ func Getdotinfo() {
 		for i := 0; i < len(drvnametmp); i++ {
 			var tmp ModBusDrv
 			tmp.Drvname = drvnametmp[i]
+			tmp.Videonum = Getdrvvedionum(drvnametmp[i])
 			Mbdrv[j].Drv = append(Mbdrv[j].Drv, tmp)
 		}
 	}
