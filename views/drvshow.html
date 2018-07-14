@@ -27,15 +27,15 @@
             </div>
             <br>
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Dottype==='数值类'">
+                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Type == 4">
                     <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
                         <div class="panel-title">
                             <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</a>
+                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drv.Name,v.Name)">历史</a>
                                 ·
-                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</a>
+                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Alarmtop,v.Alarmbot,ob.Drv.Name,v.Name)">设置</a>
                             </span>
-                            {{v.Dotname}}
+                            {{v.Name}}
                         </div>
                         <div class="panel-body">
                             <div style="padding: 5px;margin-top: 10px">
@@ -67,15 +67,15 @@
             </div>
             <br>
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Dottype==='开关类'">
+                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Type == 1">
                     <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
                         <div class="panel-title">
                             <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</a>
+                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drv.Name,v.Name)">历史</a>
                                 ·
-                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</a>
+                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Alarmtop,v.Alarmbot,ob.Drv.Name,v.Name)">设置</a>
                             </span>
-                            {{v.Dotname}}
+                            {{v.Name}}
                         </div>
                         <div class="panel-body">
                             <div style="padding: 5px;margin-top: 10px">
@@ -212,7 +212,13 @@
                         drv:self.drv
 					},
 					function (data, status) {
-						self.ob = JSON.parse(data)
+                        console.log(JSON.parse(data))
+                        try{
+						    self.ob = JSON.parse(data)
+                        }catch(e){
+                            console.log(e)
+                        }
+                        console.log(self.ob)
                         if(self.ob.Videonum > 0){
                             var ezplay = new EZUIPlayer('myPlayer');
                         }

@@ -31,7 +31,7 @@ func GetRealTimeData(name interface{}) (string, int, error) {
 		}
 	}
 
-	if index < len(TSDrv) {
+	if index < len(MainUser) {
 		for i := 0; i < len(MainUser[index].Drv); i++ {
 			drvindex := TSDrvMap[MainUser[index].Drv[i]]
 			if drvindex != 0 {
@@ -39,7 +39,7 @@ func GetRealTimeData(name interface{}) (string, int, error) {
 			}
 		}
 	}
-	data, err := json.Marshal(tmpuserdrv)
+	data, err := json.Marshal(map[string]interface{}{"User": name, "Drv": tmpuserdrv})
 
 	return string(data), len(data), err
 }
@@ -189,6 +189,7 @@ func StarthttpGet() {
 			//fmt.Println(string(buf.Bytes()))
 			strresult := string(buf.Bytes())
 			strs := strings.Split(strresult, "|")
+			TSDrv[Getindex].Flashtime = time.Now().Format("2006-01-02 15:04:05")
 			for n := 0; n < len(strs); n++ {
 				insertValue(Getindex, n, strs[n])
 				var tmpdot Dotvalue

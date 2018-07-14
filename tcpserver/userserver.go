@@ -26,6 +26,8 @@ func GetUserInfo() {
 		if err == nil {
 			fmt.Println(ob)
 		}
-		copy(MainUser[j].Drv, drvnametmp)
+		for i := 0; i < len(drvnametmp); i++ {
+			MainUser[j].Drv = append(MainUser[j].Drv, drvnametmp[i])
+		}
 	}
 }

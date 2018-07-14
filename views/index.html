@@ -19,8 +19,8 @@
 			<div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
 				<div class="panel-title">
 					<span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-						<a type="button" :href="'/admin/drvshow?user='+ob.User+'&drv=' + v.Drvname">查看详细信息</a>
-					</span> {{v.Drvname}}
+						<a type="button" :href="'/admin/drvshow?user='+ob.User+'&drv=' + v.Drv.Name">查看详细信息</a>
+					</span> {{v.Drv.Name}}
 				</div>
 				<div class="panel-body">
 					<ul class="basic-list">
@@ -38,7 +38,7 @@
 						</li>
 					</ul>
 				</div>
-				<div class="panel-footer">更新时间</div>
+				<div class="panel-footer">更新时间：{{v.Flashtime}}</div>
 			</div>
 		</div>
 	</div>
