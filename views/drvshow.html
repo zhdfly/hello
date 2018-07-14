@@ -1,202 +1,224 @@
 [[template "top.html" .]]
 
 <!-- MAIN -->
-<div class="content">
+<div class="content" id="app">
+    <div class="page-header">
+        <h1 class="title">{{ ob.Drvname }}</h1>
+        <ol class="breadcrumb">
+            <li class="active">设备详细信息</li>
+        </ol>
+
+        <!-- Start Page Header Right Div -->
+        <div class="right">
+            <div class="btn-group" role="group" aria-label="...">
+            </div>
+        </div>
+        <!-- End Page Header Right Div -->
+
+    </div>
     <!-- OVERVIEW -->
-    <div id="app">
-        <div>
-            <div class="panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ ob.Drvname }}</h3>
-                    <ul class="panel-tools">
-                        <li>
-                            <a class="icon expand-tool">
-                                <i class="fa fa-expand"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a class="icon minimise-tool">
-                                <i class="fa fa-minus"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                <div class="panel-body">
-                    <div v-if="ob.Sensornum > 0">
-                        <br>
-                        <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
-                            传感器节点
+    <div>
+        <div v-if="ob.Sensornum > 0">            
+            <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
+                传感器节点
+                <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
+                    <a :href="'/admin/muxchart?user='+user+'&drv='+drv" type="button" style="color:#fff;">混合数据展示</a>
+                </span>
+            </div>
+            <br>
+            <div class="row">
+                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Dottype==='数值类'">
+                    <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
+                        <div class="panel-title">
+                            <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
+                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</a>
+                                ·
+                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</a>
+                            </span>
+                            {{v.Dotname}}
                         </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-md-3 col-sm-4 col-xs-6" style="margin-top: 10px;height: 150px;" v-for="v in ob.Dot" v-if="v.Dottype==='数值类'">
-                                <div style="border-bottom: 2px solid #399bff;height: 20%;background-color: #399bff;color: #fff;text-align: center;vertical-align: middle">
-                                    {{v.Dotname}}
+                        <div class="panel-body">
+                            <div style="padding: 5px;margin-top: 10px">
+                                <div>
+                                    <div style="float:left;font-size: 25px;width: 60%;text-align: center">
+                                        {{v.Value}}
+                                    </div>
+                                    <div style="float:left;">
+                                        lg
+                                    </div>
                                 </div>
-                                <!--数据显示-->
-                                <div style="border: 1px solid #ccc;height: 80%;">
-                                    <div style="padding: 5px;margin-top: 10px">
-                                        <div>
-                                            <div style="float:left;font-size: 25px;width: 60%;text-align: center">
-                                                {{v.Value}}
-                                            </div>
-                                            <div style="float:left;">
-                                                lg
-                                            </div>
-                                        </div>
-                                        <br>
-                                        <div style="text-align: center">
-                                            上限：{{v.Dotwarningtop}};下限：{{v.Dotwarningbot}}
-                                        </div>
+                                <br>
+                            </div>
+                        </div>
+                        <div class="panel-footer">
+                            <div style="text-align: center">
+                                上限：{{v.Dotwarningtop}} · 下限：{{v.Dotwarningbot}}
+                            </div>
+                        </div>
+                    </div>
 
-                                    </div>
-
-                                    <br>
-                                    <div class="pull-right pull-bottom" style="padding-right: 10px">
-                                        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</button>
-                                        <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="ob.IOnum > 0">
-                        <br>
-                        <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
-                            动作节点
-                        </div>
-                        <br>
-                        <div class="row">
-                            <div class="col-md-3 col-sm-4 col-xs-6" style="margin-top: 10px;height: 150px;" v-for="v in ob.Dot" v-if="v.Dottype==='开关类'">
-                                <div style="border-bottom: 2px solid #399bff;height: 20%;background-color: #399bff;color: #fff;text-align: center;vertical-align: middle">
-                                    {{v.Dotname}}
-                                </div>
-                                <!--数据显示-->
-                                <div style="border: 1px solid #ccc;height: 80%;">
-                                    <div style="padding: 5px;margin-top: 10px">
-                                        <div style="margin-top: 22px;text-align: center">
-                                            <div v-if="v.Value==='1'">
-                                                <input type="checkbox" checked data-toggle="toggle" data-onstyle="success">
-                                            </div>
-                                            <div v-else>
-                                                <input type="checkbox" data-toggle="toggle" data-onstyle="success">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <br>
-                                    <div class="pull-right pull-bottom" style="padding-right: 10px">
-                                        <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</button>
-                                        <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div v-if="ob.Videonum > 0">
-                        <br>
-                        <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
-                            监控设备
-                        </div>
-                        <br>
-                        <div class="col-md-6">
-                            <div style="margin-top: 10px;height: 240px;" v-for="v in vob">
-                                <div style="border-bottom: 2px solid #399bff;height: 20%;background-color: #399bff;color: #fff;text-align: center;vertical-align: middle">
-                                    {{v.Name}}
-                                </div>
-                                <!--数据显示-->
-                                <div style="border: 1px solid #ccc;height: 80%;text-align: center;">
-                                    <video id="myPlayer" width=100% height=100% class="video-js vjs-default-skin" controls autoplay>
-                                        <source v-bind:src="v.Liveurl" type="application/x-mpegURL">
-                                    </video>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
-            <div class="modal fade" id="userdrvs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                            <h4 class="modal-title">
-                                <div id="valuetitle">管理设备</div>
-                            </h4>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
-                                <div class="col-sm-2" style="line-height: 30px">
-                                    时间：
-                                </div>
-                                <div class="col-sm-3">
-                                    <input type='text' class='form-control selectData' id='datestart' name='date'>
-                                </div>
-                                <div class="col-sm-3">
-                                    <input type='text' class='form-control selectData' id='datestop' name='date'>
-                                </div>
-                                <div class="col-sm-4">
-                                    <button type="button" class="btn btn-success pull-right" @click="getvalue('S','S')">查询</a>
-                                </div>
-                            </div>
-                            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-                            <div id="main" style="width: 500px;height:400px;"></div>
-                        </div>
-                    </div>
-                </div>
+        </div>
+        <div v-if="ob.IOnum > 0">
+            <br>
+            <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
+                控制器节点
             </div>
-            <div class="modal fade" id="setwin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">×</span>
-                            </button>
-                            <h4 class="modal-title">
-                                <div id="valuetitles">管理设备</div>
-                            </h4>
+            <br>
+            <div class="row">
+                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Dottype==='开关类'">
+                    <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
+                        <div class="panel-title">
+                            <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
+                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</a>
+                                ·
+                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</a>
+                            </span>
+                            {{v.Dotname}}
                         </div>
-                        <div class="modal-body">
-                            <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
-                                <div class="col-xs-5" style="line-height: 30px">
-                                    上限值：
-                                </div>
-                                <div class="col-xs-7">
-                                    <input type='text' id='warningtop' name='date'>
-                                </div>
-                            </div>
-                            <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
-                                <div class="col-xs-5" style="line-height: 30px">
-                                    下限值：
-                                </div>
-                                <div class="col-xs-7">
-                                    <input type='text' id='warningbot' name='date'>
-                                </div>
+                        <div class="panel-body">
+                            <div style="padding: 5px;margin-top: 10px">
+                                <div style="text-align: center">
 
+                                    <div v-if="v.Value==='1'">
+                                        <a href="#" class="btn btn-rounded btn-success">开启</a>
+                                    </div>
+                                    <div v-else>
+                                        <a href="#" class="btn btn-rounded btn-warning">关闭</a>
+                                    </div>
+
+                                </div>
                             </div>
-                            <div class="pull-right" style="padding-left:10px">
-                                <button type="button" class="btn btn-success pull-right" @click="setwarning()">确定</a>
+                        </div>
+                        <div class="panel-footer">
+                            <div style="text-align: center">
+                                ·
                             </div>
-                            <br>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <div v-if="ob.Videonum > 0">
+            <br>
+            <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
+                监控设备
+            </div>
+            <br>
+            <div class="col-md-6">
+                <div style="margin-top: 10px;height: 240px;" v-for="v in vob">
+                    <div style="border-bottom: 2px solid #399bff;height: 20%;background-color: #399bff;color: #fff;text-align: center;vertical-align: middle">
+                        {{v.Name}}
+                    </div>
+                    <!--数据显示-->
+                    <div style="border: 1px solid #ccc;height: 80%;text-align: center;">
+                        <video id="myPlayer" width=100% height=100% class="video-js vjs-default-skin" controls autoplay>
+                            <source v-bind:src="v.Liveurl" type="application/x-mpegURL">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="userdrvs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">
+                            <div id="valuetitle">管理设备</div>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
+                            <div class="col-sm-2" style="line-height: 30px">
+                                时间：
+                            </div>
+                            <div class="col-sm-3">
+                                <input type='text' class='form-control selectData' id='datestart' name='date'>
+                            </div>
+                            <div class="col-sm-3">
+                                <input type='text' class='form-control selectData' id='datestop' name='date'>
+                            </div>
+                            <div class="col-sm-4">
+                                <button type="button" class="btn btn-success pull-right" @click="getvalue('S','S')">查询</a>
+                            </div>
+                        </div>
+                        <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+                        <div id="main" style="width: 500px;height:400px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="setwin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">
+                            <div id="valuetitles">管理设备</div>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
+                            <div class="col-xs-5" style="line-height: 30px">
+                                上限值：
+                            </div>
+                            <div class="col-xs-7">
+                                <input type='text' id='warningtop' name='date'>
+                            </div>
+                        </div>
+                        <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
+                            <div class="col-xs-5" style="line-height: 30px">
+                                下限值：
+                            </div>
+                            <div class="col-xs-7">
+                                <input type='text' id='warningbot' name='date'>
+                            </div>
+                        </div>
+                        <div class="pull-right" style="padding-left:10px">
+                            <button type="button" class="btn btn-success pull-right" @click="setwarning()">确定</a>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <!-- END OVERVIEW -->
+</div>
+<!-- END OVERVIEW -->
 </div>
 <script>
-    var tmp = JSON.parse([[.tmp]]);
     new Vue({
         el: '#app',
         data: {
-            ob: tmp,
-            drv: "",
+            ob: [],
+            drv: [[.drv]],
+            user: [[.name]],
             dot: "",
             vob: JSON.parse([[.video]])
         },
+        created: function () {
+				var self = this
+				console.log("获取用户设备信息")
+				$.post("/admin/drvshow",
+					{
+						type: "getdotinfo",
+                        user:self.user,
+                        drv:self.drv
+					},
+					function (data, status) {
+						self.ob = JSON.parse(data)
+                        if(self.ob.Videonum > 0){
+                            var ezplay = new EZUIPlayer('myPlayer');
+                        }
+						console.log("获取用户信息成功", self)
+					});
+			},
         methods: {
             setwarningwin: function (top, bot, drv, dot) {
                 var self = this;
@@ -209,7 +231,7 @@
             },
             setwarning: function () {
                 var self = this;
-                $.post("/admin/",
+                $.post("/admin/drvshow",
                     {
                         type: "setwarning",
                         drv: self.drv,
@@ -234,7 +256,7 @@
                     $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
                 }
                 $("#valuetitle").text(self.drv + ":" + self.dot + "  历史数据")
-                $.post("/admin/",
+                $.post("/admin/drvshow",
                     {
                         type: "dotvalue",
                         drv: self.drv,
@@ -249,12 +271,13 @@
                                 boundaryGap: false,
                                 data: JSON.parse(data).Time
                             },
-                            series: [{
-                                // 根据名字对应到相应的系列
+                            series: {
                                 name: dot,
+                                type: 'line',
                                 data: JSON.parse(data).Data
-                            }]
+                            }
                         });
+
                     });
             },
         }
@@ -332,8 +355,6 @@
         todayHighlight: false,    //今天高亮
         weekStart: 0              //星期几是开始
     });
-
-    console.log(tmp)
 </script>
 <!-- Basic Single Date Picker -->
 <script type="text/javascript">
@@ -342,8 +363,7 @@
         var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
         $("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
         $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
-
     });
-    new EZUIPlayer('myPlayer');
+    
 </script>
 <!-- END MAIN -->

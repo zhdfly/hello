@@ -33,7 +33,7 @@
 
 <div class="content">
     <!-- Start Page Header -->
-    
+
     <div class="page-header">
         <h1 class="title">用户管理</h1>
         <ol class="breadcrumb">
@@ -52,26 +52,12 @@
     <!-- MAIN CONTENT -->
 
     <div id="app">
-        <br>
         <div class="row">
             <div class="col-md-4" v-for="c in ob">
                 <!--设备显示面板-->
-                <div class="panel">
+                <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
                     <div class="panel-title">
                         <h3 class="panel-title">{{c.Name}}</h3>
-                        <ul class="panel-tools">
-                            <li>
-                                <a class="icon expand-tool">
-                                    <i class="fa fa-expand"></i>
-                                </a>
-                            </li>
-                            <li>
-                                <a class="icon closed-tool">
-                                    <i class="fa fa-times"></i>
-                                </a>
-                            </li>
-                        </ul>
-
                     </div>
                     <div class="panel-body">
                         <ul class="list-unstyled activity-timeline">
@@ -82,7 +68,6 @@
                                     <!--<span class="timestamp">{{c.Time}}</span>-->
                                 </p>
                             </li>
-
                         </ul>
                         <div class="pull-right">
                             <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#userdrvs" @click="toggle(c.Name)">设备</button>
@@ -172,7 +157,7 @@
 </div>
 <!--修改用户信息弹出框-->
 
-<script>
+<script>   
     var tmp = JSON.parse([[.usrinfo]]);
     var userdrvinfo
     new Vue({
@@ -214,8 +199,8 @@
                 var sltdrv = []
                 var self = this;
                 $("input[name='selectdrv']:checked").each(function (i) {//把所有被选中的复选框的值存入数组
-                    sltdrv.push({ Id: 0, Usrname: self.usrname, Drvname: $(this).val() })
-                });
+                   sltdrv.push({ Id: 0, Usrname: self.usrname, Drvname: $(this).val() })
+                }); 
                 console.log(sltdrv)
                 $.post("/admin/manage",
                     {

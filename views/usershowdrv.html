@@ -86,34 +86,36 @@
                             </div>
                             <br>
                             <div class="row">
-                                <div class="col-md-3 col-sm-4 col-xs-6" style="margin-top: 10px;height: 150px;" v-for="v in ob.Dot" v-if="v.Dottype==='数值类'">
-                                    <div style="border-bottom: 2px solid #399bff;height: 20%;background-color: #399bff;color: #fff;text-align: center;vertical-align: middle">
-                                        {{v.Dotname}}
-                                    </div>
-                                    <!--数据显示-->
-                                    <div style="border: 1px solid #ccc;height: 80%;">
-                                        <div style="padding: 5px;margin-top: 10px">
-                                            <div>
-                                                <div style="float:left;font-size: 25px;width: 60%;text-align: center">
-                                                    {{v.Value}}
+                                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Dottype==='数值类'">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-title">
+                                            <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
+                                                <a href="#" type="button" style="color:#fff;" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</a>
+                                                ·
+                                                <a href="#" type="button" style="color:#fff;" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</a>
+                                            </span>
+                                            {{v.Dotname}}
+                                        </div>
+                                        <div class="panel-body">
+                                            <div style="padding: 5px;margin-top: 10px">
+                                                <div>
+                                                    <div style="float:left;font-size: 25px;width: 60%;text-align: center">
+                                                        {{v.Value}}
+                                                    </div>
+                                                    <div style="float:left;">
+                                                        lg
+                                                    </div>
                                                 </div>
-                                                <div style="float:left;">
-                                                    lg
-                                                </div>
+                                                <br>
                                             </div>
-                                            <br>
+                                        </div>
+                                        <div class="panel-footer">
                                             <div style="text-align: center">
-                                                上限：{{v.Dotwarningtop}};下限：{{v.Dotwarningbot}}
+                                                上限：{{v.Dotwarningtop}} · 下限：{{v.Dotwarningbot}}
                                             </div>
-
-                                        </div>
-
-                                        <br>
-                                        <div class="pull-right pull-bottom" style="padding-right: 10px">
-                                            <button class="btn btn-primary btn-xs" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drvname,v.Dotname)">历史</button>
-                                            <button class="btn btn-danger btn-xs" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Dotwarningtop,v.Dotwarningbot,ob.Drvname,v.Dotname)">设置</button>
                                         </div>
                                     </div>
+
                                 </div>
                             </div>
                         </div>

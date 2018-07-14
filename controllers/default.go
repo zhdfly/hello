@@ -26,6 +26,7 @@ func (c *MainController) Get() {
 }
 func (this *MainController) Post() {
 	posttype := this.GetString("type")
+	beego.Info(posttype)
 	if posttype == "dotvalue" {
 		rlt, err := tcpserver.Getdotvalue(this.GetString("drv"), this.GetString("dot"), this.GetString("start"), this.GetString("stop"))
 		fmt.Println(rlt)
@@ -38,6 +39,15 @@ func (this *MainController) Post() {
 	if posttype == "setwarning" {
 		rlt, err := tcpserver.Setdotwarning(this.GetString("drv"), this.GetString("dot"), this.GetString("top"), this.GetString("bot"))
 		fmt.Println(rlt)
+		if err == nil {
+			this.Ctx.WriteString(rlt)
+		} else {
+			this.Ctx.WriteString("")
+		}
+	}
+	//获取实时数据
+	if posttype == "getreal" {
+		rlt, _, err := tcpserver.GetRealTimeData(this.GetSession("loginuser"))
 		if err == nil {
 			this.Ctx.WriteString(rlt)
 		} else {

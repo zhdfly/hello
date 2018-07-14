@@ -1,78 +1,47 @@
 package controllers
 
 import (
-	"fmt"
 	"hello/tcpserver"
 
 	"github.com/astaxie/beego"
 )
 
-type UsrController struct {
-	beego.Controller
-}
-
-func (this *UsrController) Get() {
-	posttype := this.GetString("type")
-	if posttype == "drvdot" {
-		rlt, _ := tcpserver.Getdrvdotinfo(this.GetString("drv"))
-		fmt.Println(rlt)
-		this.Data["name"] = this.GetSession("loginuser")
-		this.Data["drv"] = this.GetString("drv")
-		this.Data["usrdrvinfo"] = rlt
-		this.TplName = "addinfo.html"
-	}
-}
-func (this *UsrController) Post() {
-	posttype := this.GetString("type")
-	if posttype == "drvdot" {
-		rlt, err := tcpserver.Getdrvdotinfo(this.GetString("drv"))
-		fmt.Println(rlt)
-		if err == nil {
-			this.Ctx.WriteString(rlt)
-		} else {
-			this.Ctx.WriteString("")
-		}
-	}
-	if posttype == "dltdrvdot" {
-		rlt := tcpserver.Dltdrvdot(this.GetString("drv"), this.GetString("dotname"))
-		this.Ctx.WriteString(rlt)
-		tcpserver.Dltdot(this.GetString("dotname"), this.GetString("drv"))
-	}
-}
-
-//自定义控制器02
+//用户控制器
 type MagController struct {
 	beego.Controller
 }
 
-//实现Post方法
+//用户GET控制器
 func (this *MagController) Get() {
 
 	usrjson, err := tcpserver.Getusrinfo()
 	if err != nil {
 		println(err)
 	}
-	this.Data["name"] = "beego.me"
+	this.Data["name"] = this.GetSession("loginuser")
 	this.Data["usrinfo"] = usrjson
 	this.TplName = "manage.html"
 }
 
-//实现Post方法
+//用户POST控制器
 func (this *MagController) Post() {
 
 	var usrjson string
 	var err error
 	var posttype = this.GetString("type")
+	//获取用户现有的设备列表
 	if posttype == "userdrv" {
 		usrjson, err = tcpserver.Getusrdrvinfo(this.GetString("usr"))
 	}
+	//获取不属于用户的设备列表
 	if posttype == "alldrv" {
 		usrjson, err = tcpserver.Getusrnotdrvinfo(this.GetString("usr"))
 	}
+	//设置用户所拥有的设备列表
 	if posttype == "usrsltdrv" {
 		tcpserver.Setusrdrv(this.GetString("usr"), this.GetString("drv"))
-		tcpserver.Getdotinfo()
-		tcpserver.Creaturl()
+		tcpserver.HotReFrash()
+		usrjson = "OK"
 	}
 	if err == nil {
 		this.Ctx.WriteString(usrjson)
@@ -81,17 +50,17 @@ func (this *MagController) Post() {
 	}
 }
 
-//自定义控制器02
+//新增加用户控制器
 type AddnewusrController struct {
 	beego.Controller
 }
 
-//实现Post方法
+//新增加用户控制器Post方法
 func (this *AddnewusrController) Post() {
 	rlt := tcpserver.Inserttousr(this.GetString("usr"), this.GetString("pas"))
 	if rlt == "OK" {
 		this.Ctx.WriteString("OK")
-		tcpserver.Getdotinfo()
+		tcpserver.HotReFrash()
 	} else {
 		this.Ctx.WriteString("ERR")
 	}

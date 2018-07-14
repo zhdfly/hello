@@ -1,0 +1,172 @@
+[[template "top.html" .]]
+<div class="content">
+    <!-- MAIN CONTENT -->
+    <!-- Start Page Header -->
+    <div class="page-header">
+        <h1 class="title">[[.drv]] 设备数据点管理</h1>
+        <ol class="breadcrumb">
+            <li class="active">设备数据点管理</li>
+        </ol>
+
+        <!-- Start Page Header Right Div -->
+        <div class="right">
+            <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default pull-right" data-toggle="modal" data-target="#drvdots" data-whatever="张三">新增</button>
+            </div>
+        </div>
+        <!-- End Page Header Right Div -->
+
+    </div>
+    <div class="row" id="app">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%">名称</th>
+                                <th style="width: 40%">类型</th>
+                                <th style="width: 20%">格式</th>
+                                <th style="width: 10%">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="c in ob">
+                                <td>{{c.Name}}</td>
+                                <td>{{c.Dottype}}</td>
+                                <td>{{c.Datatype}}</td>
+                                <td class="pull-right">
+                                    <button type="button" class="btn btn-danger btn-xs" @click="dltdrvdot(c.Name)">删除</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--设备数据点-->
+        <!--弹出模态窗-->
+        <div class="modal fade" id="drvdots" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">新建数据点</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div>数据点名称</div>
+                                <input type="text" class="form-control" placeholder="数据点名称" id="dotname">
+                                <br>
+                                <div>数据点类型</div>
+                                <select class="form-control" id="dottype">
+                                    <option value="可读">只读</option>
+                                    <option value="可写">读写</option>
+                                </select>
+                                <br>
+                                <div>数据点格式</div>
+                                <select class="form-control" id="datatype">
+                                    <option value="数值类">数值类</option>
+                                    <option value="开关类">开关类</option>
+                                </select>
+                                <br>
+
+                            </div>
+                            <div class="col-md-6">
+                                <div>数据单位</div>
+                                <input type="text" class="form-control" placeholder="数据单位" id="dotunit">
+                                <br>
+                                <div>设备说明</div>
+                                <textarea class="form-control" placeholder="设备说明" rows="5" id="dotinfo"></textarea>
+                                <br>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" @click="next">添加数据点</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--设备数据点-->
+        </div>
+
+        <!-- END MAIN CONTENT -->
+    </div>
+    <script>
+        var tmp = JSON.parse([[.usrdrvinfo]]);
+        new Vue({
+            el: '#app',
+            data: {
+                ob: tmp,
+                drvname: [[.drv]],
+                ddob: [],
+            },
+            methods: {
+                next: function () {
+
+                },
+                getdrvdot: function (drv) {
+                    var self = this
+                    $.post("/admin/drvdot",
+                        {
+                            type: "drvdot",
+                            drv: drv,
+                        },
+                        function (data, status) {
+
+                            self.ob = JSON.parse(data)
+                        });
+                },
+                adddrvdot: function () {
+                    var self = this;
+                    var name = $("#dotname").val();
+                    var dtype = $("#dottype").val();
+                    var datatype = $("#datatype").val();
+                    var info = $("#dotinfo").val();
+                    var unit = $("#dotunit").val();
+                    if (name.length < 2) {
+                        alert("设备名称长度必须大于2")
+                    }
+                    else {
+                        $.post("/admin/drvdot",
+                            {
+                                type: "creatnewdot",
+                                name: name,
+                                dtype: dtype,
+                                datatype: datatype,
+                                info: info,
+                                drv: self.drvname,
+                                unit:unit
+                            },
+                            function (data, status) {
+                                alert("数据1：" + data + "\n状态：" + status);
+                                self.getdrvdot(self.drvname)
+                            });
+
+                    }
+                },
+                dltdrvdot: function (dot) {
+                    var self = this
+                    var mymessage = confirm("确定删除设备 " + self.drvname + " 中的 " + dot + " 数据点？");
+                    if (mymessage == true) {
+                        $.post("/admin/drvdot",
+                            {
+                                type: "dltdrvdot",
+                                dotname: dot,
+                                drv: self.drvname
+                            },
+                            function (data, status) {
+                                alert("数据：" + data + "\n状态：" + status);
+                                self.getdrvdot(self.drvname)
+                            })
+                    }
+                    else if (mymessage == false) {
+                    }
+                }
+            }
+        })
+    </script> [[template "bottom.html" .]]

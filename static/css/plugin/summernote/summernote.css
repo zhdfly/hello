@@ -301,9 +301,9 @@ filter:alpha(opacity=90);
 .note-dialog .note-help-dialog .modal-content {
 background:transparent;
 border:1px solid #FFF;
--webkit-border-radius:5px;
--moz-border-radius:5px;
-border-radius:5px;
+-webkit-border-radius:0px;
+-moz-border-radius:0px;
+border-radius:0px;
 -webkit-box-shadow:none;
 -moz-box-shadow:none;
 box-shadow:none;

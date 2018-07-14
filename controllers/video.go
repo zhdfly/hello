@@ -22,5 +22,6 @@ func (c *VideoController) Post() {
 	if posttype == "newvideo" {
 		//优先检测是否在当前的设备列表中存在APPKEY和APPACCESS相同的设备，如果存在则不用重新获取TOKEN
 		//如不存在，则需要先获取TOKEN
+
 	}
 }

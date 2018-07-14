@@ -28,44 +28,34 @@
     </div>
     <!-- MAIN CONTENT -->
 
-    <div class="panel-body no-padding" id="app">
-
-        <br>
+    <div id="app">
         <div class="row">
             <div class="col-md-4" v-for="c in ob">
                 <!--设备显示面板-->
-                <div class="panel">
+                <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
                     <div class="panel-title">
-                        <h3 class="panel-title">{{c.Name}}</h3>
-                        <ul class="panel-tools">
-                            <li>
-                                <a class="icon expand-tool">
-                                    <i class="fa fa-expand"></i>
+                        <h3 class="panel-title">
+                            <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
+                                <a :href="'/admin/drvdot?type=drvdot&drv=' + c.Name ">
+                                    管理数据点
                                 </a>
-                            </li>
-                            <li>
-                                <a class="icon closed-tool">
-                                    <i class="fa fa-times"></i>
-                                </a>
-                            </li>
-                        </ul>
-
+                            </span>
+                            {{c.Name}}
+                        </h3>
                     </div>
                     <div class="panel-body">
                         <ul class="list-unstyled activity-timeline">
                             <li>
-                                <div class="pull-right">
-                                    <a :href="'/admin/addinfo?type=drvdot&drv=' + c.Name ">
-                                        <span>管理数据点</span>
-                                    </a>
-                                </div>
                                 <i class="fa fa-hdd-o activity-icon"></i>
-                                <p>
-                                    <span class="timestamp">创建时间</span>
-                                    <span class="timestamp">{{c.Time}}</span>
-                                </p>
+                                <span class="timestamp">创建时间</span>
+                                <span class="timestamp">{{c.Time}}</span>
                             </li>
-
+                            <br>
+                            <li>
+                                <i class="fa fa-hdd-o activity-icon"></i>
+                                <span class="timestamp">协议类型</span>
+                                <span class="timestamp">{{c.Type}}</span>
+                            </li>
                         </ul>
                         <div class="pull-right">
                             <button class="btn btn-primary btn-xs">修改</button>
@@ -114,14 +104,11 @@
                                 <input type="text" class="form-control " id="drv-type" value="MODBUS"></input>
                             </div>
                             <div>设备说明</div>
-                            <textarea class="form-control" placeholder="textarea" rows="4" id="drv-info"></textarea>
-                            <br>
+                            <textarea class="form-control" placeholder="textarea" rows="2" id="drv-info"></textarea>
                         </form>
                     </div>
-    
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                        <button type="button" @click="addnewdrv" class="btn btn-primary">Send message</button>
+                        <button type="button" @click="addnewdrv" class="btn btn-primary">添加</button>
                     </div>
                 </div>
             </div>
@@ -129,7 +116,7 @@
     </div>
 
     <!--修改用户信息弹出框-->
-    
+
     <!--修改用户信息弹出框-->
     <script>
         var tmp = JSON.parse([[.usrdrvinfo]]);

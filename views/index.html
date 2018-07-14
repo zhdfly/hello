@@ -2,302 +2,68 @@
 
 <!-- MAIN -->
 <div class="content">
+	<div class="page-header">
+		<h1 class="title">总体预览</h1>
+		<ol class="breadcrumb">
+			<li class="active">总体预览</li>
+		</ol>
+		<!-- Start Page Header Right Div -->
+		<div class="right">
+		</div>
+		<!-- End Page Header Right Div -->
+
+	</div>
 	<!-- OVERVIEW -->
-	<div id="app">
-		<div>
-			<div class="panel">
-				<div class="panel-heading">
-					<h3 class="panel-title">{{ ob.User }}</h3>
-					<ul class="panel-tools">
-						<li>
-							<a class="icon expand-tool">
-								<i class="fa fa-expand"></i>
-							</a>
+	<div class="row" id="app">
+		<div class="col-sm-4" v-for="v in ob.Drv">
+			<div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
+				<div class="panel-title">
+					<span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
+						<a type="button" :href="'/admin/drvshow?user='+ob.User+'&drv=' + v.Drvname">查看详细信息</a>
+					</span> {{v.Drvname}}
+				</div>
+				<div class="panel-body">
+					<ul class="basic-list">
+						<li>传感器节点
+							<span class="right label label-primary">{{v.Sensornum}}</span>
 						</li>
-						<li>
-							<a class="icon minimise-tool">
-								<i class="fa fa-minus"></i>
-							</a>
+						<li>控制器节点
+							<span class="right label label-primary">{{v.IOnum}}</span>
+						</li>
+						<li>联锁控制链
+							<span class="right label label-primary">{{v.Logicnum}}</span>
+						</li>
+						<li>监控设备点
+							<span class="right label label-primary">{{v.Videonum}}</span>
 						</li>
 					</ul>
 				</div>
-				<br>
-				<div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
-					总体预览
-				</div>
-				<br>
-				<div class="panel-body">
-					<div v-for="v in ob.Drv">
-						<div style="border: 1px solid #399bff;">
-							<div style="height: 30px;background-color: #399bff;padding-left: 10px;vertical-align: middle">
-								<div style="text-align: left;width: 30%;float: left;position:absolute;line-height:30px">
-									{{v.Drvname}}
-								</div>
-								<div style="text-align: right;width: 30%;float: left;position:absolute;right: 5%;line-height:30px">
-									<a type="button" :href="'/admin/drvshow?user='+ob.User+'&drv=' + v.Drvname" style="color:#fff;">查看详细信息</a>
-								</div>
-							</div>
-							<div class="row">
-								<div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 30px;margin-top: 10px;margin-bottom: 10px;border-right: 1px solid #bacdd3;width: 25%">
-									<div style="text-align: center;font-size: 18px;">传感节点</div>
-									<br>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px">数量：{{v.Sensornum}}个</div>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px"> 更新时间：15点15分</div>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px"> 报警信息：无</div>
-								</div>
-								<div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 10px;margin-top: 10px;margin-bottom: 10px;border-right: 1px solid #bacdd3;width: 25%">
-									<div style="text-align: center;font-size: 18px;">动作节点</div>
-									<br>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px">控制器节点：{{v.IOnum}}个</div>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px"> 更新时间：15点15分</div>
-								</div>
-								<div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 10px;margin-top: 10px;margin-bottom: 10px;border-right: 1px solid #bacdd3;width: 25%">
-									<div style="text-align: center;font-size: 18px;">联锁控制器</div>
-									<br>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px">联锁控制器：{{v.Logicnum}}个</div>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px">正在运行：0个</div>
-								</div>
-								<div class="col-md-3 col-xs-6" style="height: 130px;padding-left: 10px;margin-top: 10px;margin-bottom: 10px;width: 25%">
-									<div style="text-align: center;font-size: 18px;">监控设备</div>
-									<br>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px">监控设备：{{v.Videonum}}个</div>
-									<div style="line-height: 28px;font-size: 15px;padding-left: 10px">在线数量：0个</div>
-								</div>
-							</div>
-						</div>
-						<br>
-					</div>
-				</div>
-			</div>
-			<div class="modal fade" id="userdrvs" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">×</span>
-							</button>
-							<h4 class="modal-title">
-								<div id="valuetitle">管理设备</div>
-							</h4>
-						</div>
-						<div class="modal-body">
-							<div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
-								<div class="col-sm-2" style="line-height: 30px">
-									时间：
-								</div>
-								<div class="col-sm-3">
-									<input type='text' class='form-control selectData' id='datestart' name='date'>
-								</div>
-								<div class="col-sm-3">
-									<input type='text' class='form-control selectData' id='datestop' name='date'>
-								</div>
-								<div class="col-sm-4">
-									<button type="button" class="btn btn-success pull-right" @click="getvalue('S','S')">查询</a>
-								</div>
-							</div>
-							<!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
-							<div id="main" style="width: 500px;height:400px;"></div>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="modal fade" id="setwin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
-				<div class="modal-dialog" role="document">
-					<div class="modal-content">
-						<div class="modal-header">
-							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-								<span aria-hidden="true">×</span>
-							</button>
-							<h4 class="modal-title">
-								<div id="valuetitles">管理设备</div>
-							</h4>
-						</div>
-						<div class="modal-body">
-							<div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
-								<div class="col-xs-5" style="line-height: 30px">
-									上限值：
-								</div>
-								<div class="col-xs-7">
-									<input type='text' id='warningtop' name='date'>
-								</div>
-							</div>
-							<div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
-								<div class="col-xs-5" style="line-height: 30px">
-									下限值：
-								</div>
-								<div class="col-xs-7">
-									<input type='text' id='warningbot' name='date'>
-								</div>
-
-							</div>
-							<div class="pull-right" style="padding-left:10px">
-								<button type="button" class="btn btn-success pull-right" @click="setwarning()">确定</a>
-							</div>
-							<br>
-						</div>
-					</div>
-				</div>
+				<div class="panel-footer">更新时间</div>
 			</div>
 		</div>
 	</div>
-	<!-- END OVERVIEW -->
-</div>
-<script>
-	var tmp = JSON.parse([[.tmp]]);
-	new Vue({
-		el: '#app',
-		data: {
-			ob: tmp,
-			drv: "",
-			dot: ""
-		},
-		methods: {
-			setwarningwin: function (top, bot, drv, dot) {
-				var self = this;
-				self.drv = drv
-				self.dot = dot
-				$("#warningtop").val(top)
-				$("#warningbot").val(bot)
-				console.log(top, bot)
-				$("#valuetitles").text(self.drv + ":" + self.dot + "  历史数据")
+	<script>		
+		new Vue({
+			el: '#app',
+			data: {
+				ob: { User: "", Drv: [] },
 			},
-			setwarning: function () {
-				var self = this;
-				$.post("/admin/",
-					{
-						type: "setwarning",
-						drv: self.drv,
-						dot: self.dot,
-						top: $("#warningtop").val(),
-						bot: $("#warningbot").val()
-					}, function (data, status) {
-						alert(data)
-					})
+			methods: {
+
 			},
-			getvalue: function (drv, dot) {
-				var self = this;
-				if (drv == "S" && dot == "S") { }
-				else {
-					self.drv = drv
-					self.dot = dot
-				}
-				if ($("#datestart").val() == "") {
-					var starttime = new Date(new Date().getTime())
-					var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-					$("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
-					$("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
-				}
-				$("#valuetitle").text(self.drv + ":" + self.dot + "  历史数据")
-				$.post("/admin/",
+			created: function () {
+				var self = this
+				console.log("获取用户设备信息")
+				$.post("/admin",
 					{
-						type: "dotvalue",
-						drv: self.drv,
-						dot: self.dot,
-						start: $("#datestart").val(),
-						stop: $("#datestop").val()
+						type: "getreal",
 					},
 					function (data, status) {
-						myChart.setOption({
-							xAxis: {
-								type: 'category',
-								boundaryGap: false,
-								data: JSON.parse(data).Time
-							},
-							series: [{
-								// 根据名字对应到相应的系列
-								name: dot,
-								data: JSON.parse(data).Data
-							}]
-						});
+						self.ob = JSON.parse(data)
+						console.log("获取用户信息成功", self)
 					});
-			},
-		}
-	})
-	//自适应宽高
-	var myChart = echarts.init(document.getElementById('main'));
-	var myChartContainer = function () {
-		document.getElementById('main').style.width = document.getElementById('valuetitle').offsetWidth + 10 + 'px'
-	};
-	myChartContainer();
-
-	// 显示标题，图例和空的坐标轴
-	myChart.setOption({
-		xAxis: {
-			type: 'category',
-			boundaryGap: false,
-			data: []
-		},
-		yAxis: {
-			type: 'value',
-			data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-		},
-		tooltip: {
-			trigger: 'axis',
-		},
-		series: [{
-			name: '最高气温',
-			type: 'line',
-			data: [11, 11, 15, 13, 12, 13, 10],
-			markPoint: {
-				data: [
-					{ type: 'max', name: '最大值' },
-					{ type: 'min', name: '最小值' }
-				]
-			},
-			markLine: {
-				data: [
-					{ type: 'average', name: '平均值' }
-				]
 			}
-		}]
-	});
-	//浏览器大小改变时重置大小
-	window.onresize = function () {
-		//myChartContainer();
-		//myChart.resize();
-	};
-	$.fn.datepicker.dates['cn'] = {   //切换为中文显示
-		days: ["周日", "周一", "周二", "周三", "周四", "周五", "周六", "周日"],
-		daysShort: ["日", "一", "二", "三", "四", "五", "六", "七"],
-		daysMin: ["日", "一", "二", "三", "四", "五", "六", "七"],
-		months: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-		monthsShort: ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"],
-		today: "今天",
-		clear: "清除"
-	};
-
-	$('.selectData').datepicker({
-		autoclose: true, //自动关闭
-		beforeShowDay: $.noop,    //在显示日期之前调用的函数
-		calendarWeeks: false,     //是否显示今年是第几周
-		clearBtn: false,          //显示清除按钮
-		daysOfWeekDisabled: [],   //星期几不可选
-		endDate: Infinity,        //日历结束日期
-		forceParse: true,         //是否强制转换不符合格式的字符串
-		format: 'yyyy-mm-dd',     //日期格式
-		keyboardNavigation: true, //是否显示箭头导航
-		language: 'cn',           //语言
-		minViewMode: 0,
-		orientation: "auto",      //方向
-		rtl: false,
-		startDate: -Infinity,     //日历开始日期
-		startView: 0,             //开始显示
-		todayBtn: false,          //今天按钮
-		todayHighlight: false,    //今天高亮
-		weekStart: 0              //星期几是开始
-	});
-
-	console.log(tmp)
-</script>
-<!-- Basic Single Date Picker -->
-<script type="text/javascript">
-	$('#userdrvs').on('show.bs.modal', function (event) {
-		var starttime = new Date(new Date().getTime())
-		var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-		$("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
-		$("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
-
-	});
-
-</script>
-<!-- END MAIN -->
+		})		
+	</script>
+	<!-- Basic Single Date Picker -->
+	<!-- END MAIN -->

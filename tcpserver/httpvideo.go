@@ -7,54 +7,18 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/astaxie/beego/orm"
 )
 
-type AccessTokentmp struct {
-	Key  string `json:"accessToken"`
-	Time int    `json:"expireTime"`
-}
-type AccessToken struct {
-	Data AccessTokentmp `json:"data"`
-	Code string         `json:"code"`
-	Msg  string         `json:"msg"`
-}
-type Comrlt struct {
-	Code string `json:"code"`
-	Msg  string `json:"msg"`
-}
-type Listpage struct {
-	Total int `json:"total"`
-	Page  int `json:"page"`
-	Size  int `json:"size"`
-}
-type Lsitvideo struct {
-	DeviceSerial string `json:"deviceSerial"`
-	ChannelNo    int    `json:"channelNo"`
-	LiveAddress  string `json:"liveAddress"`
-	HdAddress    string `json:"hdAddress"`
-	Rtmp         string `json:"rtmp"`
-	RtmpHd       string `json:"rtmpHd"`
-	Status       int    `json:"status"`
-	Exception    int    `json:"exception"`
-	BeginTime    int    `json:"beginTime"`
-	EndTime      int    `json:"endTime"`
-}
-type Getlist struct {
-	Page Listpage    `json:"page"`
-	Data []Lsitvideo `json:"data"`
-	Code string      `json:"code"`
-	Msg  string      `json:"mag"`
-}
-type Drvvideo struct {
-	Name    string
-	Liveurl string
-}
-
 var VideoList Getlist
 var Videodrvlist []Videodrv
 var Tokenlist []Videodrv
+var testvideo = struct {
+	sync.RWMutex
+	m map[string]Videodrv
+}{m: make(map[string]Videodrv)}
 
 func Getdrvvedio(drv string) (string, error) {
 	var tl []Drvvideo

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"hello/modbus"
 	_ "hello/routers"
 	"hello/tcpserver"
 
@@ -13,9 +14,11 @@ import (
 func main() {
 	tcpserver.ConfigSQL()
 	tcpserver.Getvideolist()
+	modbus.Initmodbus()
+	tcpserver.GetUserInfo()
 	go tcpserver.Tcpstart("9999")
-	go tcpserver.StarthttpGet()
-	fmt.Printf("Start\r\n") //ceshi
+	go tcpserver.StarthttpGet() //态神服务
+	fmt.Printf("Start\r\n")     //ceshi
 	fmt.Printf("Start\r\n")
 	beego.BConfig.WebConfig.Session.SessionOn = true
 	var FilterUser = func(ctx *context.Context) {
