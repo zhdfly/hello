@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"hello/modbus"
 	_ "hello/routers"
 	"hello/tcpserver"
 
@@ -14,11 +13,12 @@ import (
 func main() {
 	tcpserver.ConfigSQL()
 	tcpserver.Getvideolist()
-	modbus.Initmodbus()
+	tcpserver.StartModbus()
 	tcpserver.GetUserInfo()
 	go tcpserver.Tcpstart("9999")
 	go tcpserver.StarthttpGet() //态神服务
-	fmt.Printf("Start\r\n")     //ceshi
+	go tcpserver.ThreadMB()
+	fmt.Printf("Start\r\n") //ceshi
 	fmt.Printf("Start\r\n")
 	beego.BConfig.WebConfig.Session.SessionOn = true
 	var FilterUser = func(ctx *context.Context) {
@@ -26,9 +26,14 @@ func main() {
 		userkey := ctx.Input.Cookie(key)
 		skey := ctx.Input.Session("loginuser")
 		userskey := ctx.Input.Session(skey)
-		if key != skey && userkey != userskey && ctx.Request.RequestURI != "/login" {
+		beego.Info(key)
+		beego.Info(userkey)
+		beego.Info(skey)
+		beego.Info(userskey)
+		if (key != skey || userkey != userskey) && ctx.Request.RequestURI != "/login" {
 			ctx.Redirect(302, "/login")
-			fmt.Println("Get....:", key, skey)
+			beego.Info("Get....:", key, skey)
+			beego.Info("Get....:", userkey, userskey)
 		}
 	}
 	var FilterAdmin = func(ctx *context.Context) {
@@ -36,14 +41,14 @@ func main() {
 		userkey := ctx.Input.Cookie(key)
 		skey := ctx.Input.Session("loginuser")
 		userskey := ctx.Input.Session(skey)
-		fmt.Println("Get....:", key, skey)
-		if (key != skey && userkey != userskey) || key != "admin" {
+		if key == skey && userkey == userskey {
+			ctx.Redirect(302, "/web")
+		} else {
 			ctx.Redirect(302, "/login")
-
 		}
 	}
-	beego.InsertFilter("/*", beego.BeforeRouter, FilterUser)
-	beego.InsertFilter("/admin/*", beego.BeforeRouter, FilterAdmin)
+	beego.InsertFilter("/web/*", beego.BeforeRouter, FilterUser)
+	beego.InsertFilter("/", beego.BeforeRouter, FilterAdmin)
 
 	beego.Run()
 }

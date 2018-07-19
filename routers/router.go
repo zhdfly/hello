@@ -7,14 +7,14 @@ import (
 )
 
 func init() {
-	beego.Router("/admin", &controllers.MainController{})
-	beego.Router("/admin/drvdot", &controllers.DrvdotController{})
-	beego.Router("/admin/manage", &controllers.MagController{})
-	beego.Router("/admin/drvmag", &controllers.DrvmagController{})
-	beego.Router("/admin/video", &controllers.VideoController{})
-	beego.Router("/admin/drvshow", &controllers.DrvshowController{})
+	beego.Router("/web", &controllers.MainController{})
+	beego.Router("/web/drvdot", &controllers.DrvdotController{})
+	beego.Router("/web/usermag", &controllers.UserMagController{})
+	beego.Router("/web/drvmag", &controllers.DrvmagController{})
+	beego.Router("/web/video", &controllers.VideoController{})
+	beego.Router("/web/drvshow", &controllers.DrvshowController{})
 	beego.Router("/login", &controllers.LoginController{})
-	beego.Router("/usershow", &controllers.UsershowController{})
-	beego.Router("/usershowdrv", &controllers.UsershowdrvController{})
-	beego.Router("/admin/muxchart", &controllers.MuxChartContraller{})
+	beego.Router("/web/muxchart", &controllers.MuxChartContraller{})
+	beego.Router("/web/drvpic", &controllers.DrvPicContraller{})
+	beego.Router("/channel", &controllers.OtherPostController{})
 }

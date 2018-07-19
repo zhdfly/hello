@@ -2,13 +2,13 @@ package tcpserver
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 
+	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )
 
@@ -53,7 +53,7 @@ func Getappaccesstekon(appkey string, appaccess string) (string, string, error) 
 		"application/x-www-form-urlencoded",
 		strings.NewReader(data))
 	if err != nil {
-		fmt.Println(err)
+		beego.Info(err)
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
@@ -62,10 +62,9 @@ func Getappaccesstekon(appkey string, appaccess string) (string, string, error) 
 		return "请求错误", "ERR", err
 	}
 	var token AccessToken
-	fmt.Println(string(body))
 	err = json.Unmarshal(body, &token)
 	if err != nil {
-		fmt.Println(err)
+		beego.Info(err)
 	}
 	if token.Code == "200" {
 		return token.Data.Key, "OK", err
@@ -84,19 +83,19 @@ func Getappaccesstekon(appkey string, appaccess string) (string, string, error) 
 func Getvideolist() {
 	o := orm.NewOrm()
 	_, err := o.Raw("select *, count(distinct accesstoken) from videodrv group by accesstoken").QueryRows(&Tokenlist)
-	if err == nil {
-		fmt.Println(Tokenlist)
+	if err != nil {
+		beego.Info(err)
 	}
 	_, err = o.Raw("select * from videodrv").QueryRows(&Videodrvlist)
-	if err == nil {
-		fmt.Println(Videodrvlist)
+	if err != nil {
+		beego.Info(err)
 	}
 	for i := 0; i < len(Tokenlist); i++ {
 		resp, err := http.Post("https://open.ys7.com/api/lapp/live/video/list",
 			"application/x-www-form-urlencoded",
 			strings.NewReader("accessToken="+Tokenlist[i].Accesstoken))
 		if err != nil {
-			fmt.Println(err)
+			beego.Info(err)
 		}
 		defer resp.Body.Close()
 		body, err := ioutil.ReadAll(resp.Body)
@@ -105,7 +104,7 @@ func Getvideolist() {
 		}
 		err = json.Unmarshal(body, &VideoList)
 		if err != nil {
-			fmt.Println("Get Video LIst Error")
+			beego.Info("Get Video LIst Error")
 			var com Comrlt
 			err = json.Unmarshal(body, &com)
 		} else {
@@ -146,6 +145,5 @@ func Getvideolist() {
 				break //APPKEY被冻结，需要和萤石云联系
 			}
 		}
-		fmt.Println(VideoList)
 	}
 }

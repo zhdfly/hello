@@ -2,7 +2,6 @@ package tcpserver
 
 import (
 	"bytes"
-	"encoding/json"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,56 +17,6 @@ var TSDrvMapBak = make(map[string]int)
 var TSDrv []MainDrvType
 var TSDrvBak []MainDrvType
 
-func GetRealTimeData(name interface{}) (string, int, error) {
-	for HotReFrashFalg != 0 {
-		beego.Info("正在进行热更新")
-	}
-	var tmpuserdrv []MainDrvType
-
-	index := 0
-	for index = 0; index < len(MainUser); index++ {
-		if MainUser[index].User == name {
-			break
-		}
-	}
-
-	if index < len(MainUser) {
-		for i := 0; i < len(MainUser[index].Drv); i++ {
-			drvindex := TSDrvMap[MainUser[index].Drv[i]]
-			if drvindex != 0 {
-				tmpuserdrv = append(tmpuserdrv, TSDrv[drvindex-1])
-			}
-		}
-	}
-	data, err := json.Marshal(map[string]interface{}{"User": name, "Drv": tmpuserdrv})
-
-	return string(data), len(data), err
-}
-func GetDrvRealTimeData(user interface{}, drv string) (string, int, error) {
-	for HotReFrashFalg != 0 {
-		beego.Info("正在进行热更新")
-	}
-	var tmpuserdrv MainDrvType
-	drvindex := TSDrvMap[drv]
-	index := 0
-	if drvindex != 0 {
-		for index = 0; index < len(MainUser); index++ {
-			if MainUser[index].User == user {
-				break
-			}
-		}
-		if index < len(MainUser) {
-			for i := 0; i < len(MainUser[index].Drv); i++ {
-				if MainUser[index].Drv[i] == drv {
-					tmpuserdrv = TSDrv[drvindex-1]
-				}
-			}
-		}
-	}
-	data, err := json.Marshal(tmpuserdrv)
-
-	return string(data), len(data), err
-}
 func Gettsdotinfo() {
 	TSDrv = nil
 	o := orm.NewOrm()
@@ -148,60 +97,55 @@ func GettsdotinfoHot() {
 	}
 }
 
-var HotReFrashFalg int
+var TSHotReFrashFalg = false
 
-func HotReFrash() {
-	HotReFrashFalg = 1
-}
 func StarthttpGet() {
 	Getindex := 0
 	Gettsdotinfo()
-	HotReFrashFalg = 0
+	TSHotReFrashFalg = false
 	for {
 		if Getindex == len(TSDrv) {
 			Getindex = 0
 			for count := 0; count < 60; count++ {
 				time.Sleep(5e8)
-				if HotReFrashFalg == 1 {
+				if TSHotReFrashFalg {
 					//开始启动热更新系统参数
 					GettsdotinfoHot()
 					copy(TSDrv, TSDrvBak)
 					Getindex = 0
-					HotReFrashFalg = 0
+					TSHotReFrashFalg = false
 				}
 			}
 		}
-		resp, err := http.Get(TSDrv[Getindex].TSUrls)
-		if err != nil {
-			// handle error
-			log.Println("err:", err)
+		if len(TSDrv[Getindex].Dot) > 0 {
+			resp, err := http.Get(TSDrv[Getindex].TSUrls)
+			if err != nil {
+				// handle error
+				log.Println("err:", err)
 
-		} else {
+			} else {
 
-			defer resp.Body.Close()
+				defer resp.Body.Close()
 
-			buf := bytes.NewBuffer(make([]byte, 0, 512))
+				buf := bytes.NewBuffer(make([]byte, 0, 512))
 
-			_, _ = buf.ReadFrom(resp.Body)
+				_, _ = buf.ReadFrom(resp.Body)
 
-			//fmt.Println(len(buf.Bytes()))
-			//fmt.Println(length)
-			//fmt.Println(string(buf.Bytes()))
-			strresult := string(buf.Bytes())
-			strs := strings.Split(strresult, "|")
-			TSDrv[Getindex].Flashtime = time.Now().Format("2006-01-02 15:04:05")
-			for n := 0; n < len(strs); n++ {
-				insertValue(Getindex, n, strs[n])
-				var tmpdot Dotvalue
-				tmpdot.Drvname = TSDrv[Getindex].Dot[n].Drvname
-				tmpdot.Dotname = TSDrv[Getindex].Dot[n].Name
-				tmpdot.Value = TSDrv[Getindex].Dot[n].Value
-				tmpdot.Status = TSDrv[Getindex].Dot[n].Status
-				tmpdot.Time = time.Now().Format("2006-01-02 15:04:05")
-				Inserttodotvalue(tmpdot)
+				//beego.Info(len(buf.Bytes()))
+				//beego.Info(length)
+				//beego.Info(string(buf.Bytes()))
+				strresult := string(buf.Bytes())
+				strs := strings.Split(strresult, "|")
+				TSDrv[Getindex].Flashtime = time.Now().Format("2006-01-02 15:04")
+				for n := 0; n < len(strs); n++ {
+					insertValue(Getindex, n, strs[n])
+					Inserttodotvalue(TSDrv[Getindex].Dot[n])
+				}
+				Getindex = Getindex + 1
+				//beego.Info(strs)
 			}
+		} else {
 			Getindex = Getindex + 1
-			//fmt.Println(strs)
 		}
 	}
 }

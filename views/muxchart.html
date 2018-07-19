@@ -20,11 +20,11 @@
     <!-- OVERVIEW -->
     <div>
         <div class="row">
-            <div class="col-md-2 col-sm-3 col-xs-4" v-for="v in ob.Dot" v-if="v.Dottype==='数值类'">
+            <div class="col-md-2 col-sm-3 col-xs-4" v-for="v in ob.Dot" v-if="v.Type== 3 || v.Type == 4">
                 <div class="checkbox checkbox-info checkbox-circle">
-                    <input :id="'#/checkbox88/'+v.Dotname" type="checkbox" name="selectdrv" :value="v.Dotname" @click="getvalue(drv,v.Dotname)">
-                    <label :for="'#/checkbox88/'+v.Dotname">
-                        {{v.Dotname}}
+                    <input :id="'#/checkbox88/'+v.Name" type="checkbox" name="selectdrv" :value="v.Name" @click="getvalue(drv,v.Name)">
+                    <label :for="'#/checkbox88/'+v.Name">
+                        {{v.Name}}
                     </label>
                 </div>
             </div>
@@ -90,7 +90,7 @@
                 var sstime = starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate()
                 var sttime = stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate()
                 console.log(drv, dot)
-                $.post("/admin/",
+                $.post("/web/",
                     {
                         type: "dotvalue",
                         drv: self.drv,

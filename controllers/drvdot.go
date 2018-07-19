@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"hello/tcpserver"
 
 	"github.com/astaxie/beego"
@@ -15,8 +14,8 @@ type DrvdotController struct {
 func (this *DrvdotController) Get() {
 	posttype := this.GetString("type")
 	if posttype == "drvdot" {
-		rlt, _ := tcpserver.Getdrvdotinfo(this.GetString("drv"))
-		fmt.Println(rlt)
+		rlt, _ := tcpserver.GetDrvDotFromMem(this.GetString("drv"))
+		beego.Info(rlt)
 		this.Data["name"] = this.GetSession("loginuser")
 		this.Data["drv"] = this.GetString("drv")
 		this.Data["usrdrvinfo"] = rlt
@@ -29,8 +28,8 @@ func (this *DrvdotController) Post() {
 	posttype := this.GetString("type")
 	//获取设备数据点
 	if posttype == "drvdot" {
-		rlt, err := tcpserver.Getdrvdotinfo(this.GetString("drv"))
-		fmt.Println(rlt)
+		rlt, err := tcpserver.GetDrvDotFromMem(this.GetString("drv"))
+		beego.Info(rlt)
 		if err == nil {
 			this.Ctx.WriteString(rlt)
 		} else {
@@ -38,15 +37,47 @@ func (this *DrvdotController) Post() {
 		}
 	}
 	//新建设备数据点
-	// if posttype == "creatnewdot" {
-	// 	rlt := tcpserver.Inserttodot(this.GetString("drv"), this.GetString("name"), this.GetString("dtype"), this.GetString("datatype"), this.GetString("info"))
-	// 	if rlt == "OK" {
-	// 		this.Ctx.WriteString("OK")
-	// 		tcpserver.HotReFrash()
-	// 	} else {
-	// 		this.Ctx.WriteString("ERR")
-	// 	}
-	// }
+	if posttype == "creatnewdot" {
+		dtype, err := this.GetInt("dtype")
+		if err != nil {
+			this.Ctx.WriteString("ERR:类型错误")
+		}
+		drw, err := this.GetInt("rw")
+		if err != nil {
+			this.Ctx.WriteString("ERR:读写方式错误")
+		}
+		daddr, err := this.GetInt("addr")
+		if err != nil {
+			this.Ctx.WriteString("ERR:地址错误")
+		}
+		ddata, err := this.GetInt("data")
+		if err != nil {
+			this.Ctx.WriteString("ERR:格式错误")
+		}
+		dtop, err := this.GetFloat("top")
+		if err != nil {
+			this.Ctx.WriteString("ERR:报警上限错误")
+		}
+		dbot, err := this.GetFloat("bot")
+		if err != nil {
+			this.Ctx.WriteString("ERR:报警下限错误")
+		}
+		dtime, err := this.GetInt("time")
+		if err != nil {
+			this.Ctx.WriteString("ERR:保存时间错误")
+		}
+		rlt := tcpserver.Inserttodot(
+			this.GetString("drv"),
+			this.GetString("name"),
+			daddr, drw, dtype, ddata, float32(dtop), float32(dbot), dtime,
+			this.GetString("unit"))
+		if rlt == "OK" {
+			this.Ctx.WriteString("OK")
+			tcpserver.HotReFrash()
+		} else {
+			this.Ctx.WriteString("ERR")
+		}
+	}
 	//删除设备数据点
 	if posttype == "dltdrvdot" {
 		rlt := tcpserver.Dltdrvdot(this.GetString("drv"), this.GetString("dotname"))

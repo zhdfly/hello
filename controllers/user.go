@@ -7,12 +7,12 @@ import (
 )
 
 //用户控制器
-type MagController struct {
+type UserMagController struct {
 	beego.Controller
 }
 
 //用户GET控制器
-func (this *MagController) Get() {
+func (this *UserMagController) Get() {
 
 	usrjson, err := tcpserver.Getusrinfo()
 	if err != nil {
@@ -20,11 +20,11 @@ func (this *MagController) Get() {
 	}
 	this.Data["name"] = this.GetSession("loginuser")
 	this.Data["usrinfo"] = usrjson
-	this.TplName = "manage.html"
+	this.TplName = "usermag.html"
 }
 
 //用户POST控制器
-func (this *MagController) Post() {
+func (this *UserMagController) Post() {
 
 	var usrjson string
 	var err error

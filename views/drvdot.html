@@ -57,37 +57,60 @@
                     </div>
                     <div class="modal-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div>数据点名称</div>
                                 <input type="text" class="form-control" placeholder="数据点名称" id="dotname">
                                 <br>
-                                <div>数据点类型</div>
-                                <select class="form-control" id="dottype">
-                                    <option value="可读">只读</option>
-                                    <option value="可写">读写</option>
+                                <div>读写方式</div>
+                                <select class="form-control" id="dotrw">
+                                    <option value="0">只读</option>
+                                    <option value="1">读写</option>
                                 </select>
                                 <br>
                                 <div>数据点格式</div>
-                                <select class="form-control" id="datatype">
-                                    <option value="数值类">数值类</option>
-                                    <option value="开关类">开关类</option>
+                                <select class="form-control" id="dottype">
+                                    <option value="2">输入开关寄存器</option>
+                                    <option value="1">输出开关寄存器</option>
+                                    <option value="4">输入数值寄存器</option>
+                                    <option value="3">输出数值寄存器</option>
                                 </select>
                                 <br>
-
+                                <div>转换系数</div>
+                                <input type="text" class="form-control" placeholder="转换系数" id="dotby" value="1">
+                                <br>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <div>数据地址</div>
+                                <input type="text" class="form-control" placeholder="数据单位" id="dotaddr" value="1">
+                                <br>
                                 <div>数据单位</div>
-                                <input type="text" class="form-control" placeholder="数据单位" id="dotunit">
+                                <input type="text" class="form-control" placeholder="数据单位" id="dotunit" value="Y">
                                 <br>
-                                <div>设备说明</div>
-                                <textarea class="form-control" placeholder="设备说明" rows="5" id="dotinfo"></textarea>
+                                <div>数据格式</div>
+                                <select class="form-control" id="dotdata">
+                                    <option value="1">单字节无符号</option>
+                                    <option value="2">双字节无符号</option>
+                                    <option value="3">四字节无符号</option>
+                                    <option value="4">单精度浮点</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <div>报警值上限</div>
+                                <input type="text" class="form-control" placeholder="数据单位" id="dottop" value="0">
                                 <br>
+                                <div>报警值下限</div>
+                                <input type="text" class="form-control" placeholder="数据单位" id="dotbot" value="0">
+                                <br>
+                                <div>保存时间间隔(秒)</div>
+                                <input type="text" class="form-control" placeholder="数据单位" id="dottime" value="30">
                             </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" @click="next">添加数据点</button>
-                            </div>
-                            </form>
                         </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" @click="adddrvdot">添加数据点</button>
+                        </div>
+
+                        </form>
+
                     </div>
                 </div>
             </div>
@@ -111,7 +134,7 @@
                 },
                 getdrvdot: function (drv) {
                     var self = this
-                    $.post("/admin/drvdot",
+                    $.post("/web/drvdot",
                         {
                             type: "drvdot",
                             drv: drv,
@@ -124,26 +147,36 @@
                 adddrvdot: function () {
                     var self = this;
                     var name = $("#dotname").val();
-                    var dtype = $("#dottype").val();
-                    var datatype = $("#datatype").val();
-                    var info = $("#dotinfo").val();
+                    var type = $("#dottype").val();
+                    var rw = $("#dotrw").val();
+                    var addr = $("#dotaddr").val();
                     var unit = $("#dotunit").val();
+                    var data = $("#dotdata").val();
+                    var top = $("#dottop").val();
+                    var by = $("#dotby").val();
+                    var bot = $("#dotbot").val();
+                    var time = $("#dottime").val();
                     if (name.length < 2) {
                         alert("设备名称长度必须大于2")
                     }
                     else {
-                        $.post("/admin/drvdot",
+                        $.post("/web/drvdot",
                             {
                                 type: "creatnewdot",
                                 name: name,
-                                dtype: dtype,
-                                datatype: datatype,
-                                info: info,
+                                dtype: type,
+                                rw: rw,
+                                addr: addr,
                                 drv: self.drvname,
-                                unit:unit
+                                unit: unit,
+                                by:by,
+                                data:data,
+                                top:top,
+                                bot:bot,
+                                time,time
                             },
                             function (data, status) {
-                                alert("数据1：" + data + "\n状态：" + status);
+                                alert("数据：" + data + "\n状态：" + status);
                                 self.getdrvdot(self.drvname)
                             });
 
@@ -153,7 +186,7 @@
                     var self = this
                     var mymessage = confirm("确定删除设备 " + self.drvname + " 中的 " + dot + " 数据点？");
                     if (mymessage == true) {
-                        $.post("/admin/drvdot",
+                        $.post("/web/drvdot",
                             {
                                 type: "dltdrvdot",
                                 dotname: dot,

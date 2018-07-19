@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"crypto/md5"
-	"fmt"
+	"encoding/hex"
 	"hello/tcpserver"
 	"time"
 
@@ -24,24 +24,23 @@ func (c *LoginController) Post() {
 	name := c.GetString("name")
 	pwd := c.GetString("pwd")
 	islogin := "OK"
-	fmt.Println(name, pwd)
+	beego.Info(name, pwd)
 	var user tcpserver.Usr
 	o := orm.NewOrm()
 	_ = o.Raw("SELECT * FROM `usr` WHERE name= ?", name).QueryRow(&user)
 	beego.Info(user)
-	fmt.Println(user.Pass)
+	beego.Info(user.Pass)
 	if user.Pass != pwd {
 		islogin = "ERR"
 		c.Ctx.WriteString(islogin)
 
 	} else {
-		if name != "admin" {
-			islogin = "YES"
-		}
+		se := md5.Sum([]byte(name + time.Now().Format("2006-01-02 15:04:05")))
 		c.SetSession("loginuser", name)
-		c.SetSession(name, md5.Sum([]byte(name+time.Now().Format("2006-01-02 15:04:05"))))
+		c.SetSession(name, hex.EncodeToString(se[:]))
+		beego.Info(c.CruSession)
 		c.Ctx.SetCookie("name", name, 1800, "/")
-		c.Ctx.SetCookie(name, name, 1800, "/")
+		c.Ctx.SetCookie(name, hex.EncodeToString(se[:]), 1800, "/")
 		c.Ctx.WriteString(islogin)
 	}
 }
@@ -62,8 +61,8 @@ func (c *LogoutController) Post() {
 		c.DestroySession()
 		islogin = true
 
-		fmt.Println("当前的session:")
-		fmt.Println(c.CruSession)
+		beego.Info("当前的session:")
+		beego.Info(c.CruSession)
 	}
 	c.Data["json"] = map[string]interface{}{"islogin": islogin}
 	c.ServeJSON()

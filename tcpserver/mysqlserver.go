@@ -2,7 +2,6 @@ package tcpserver
 
 import (
 	"encoding/json"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -10,10 +9,6 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 )
-
-var MBusDotList []Maindot
-var MBusDrvList []Maindrv
-var MBusDrv []MainDrvType
 
 func ConfigSQL() {
 	mysqluser := beego.AppConfig.String("mysqluser")
@@ -61,7 +56,7 @@ func InserttoMainDrv(name string, addr int, port int, types string, retrycount i
 			return "ERR"
 		}
 	} else {
-		fmt.Println(err)
+		beego.Info(err)
 	}
 	//除了把设备信息添加到数据库中去，还需要把内存中的数据进行热更新
 
@@ -69,29 +64,42 @@ func InserttoMainDrv(name string, addr int, port int, types string, retrycount i
 	return "ERR"
 }
 
-func Inserttodot(drv string, name string, dottype int, rw int, unit string) string {
+func Inserttodot(drv string, name string, addr int, rw int, dtype int, data int, top float32, bot float32, time int, unit string) string {
 	o := orm.NewOrm()
+	var err error
 	var ob Maindot
 	ob.Name = name
-	ob.Type = dottype
+	ob.Type = dtype
 	ob.Drvname = drv
 	ob.Rw = rw
 	ob.Unit = unit
-
-	if created, _, err := o.ReadOrCreate(&ob, "Name", "Drvname"); err == nil {
+	ob.Data = data
+	ob.Addr = addr
+	ob.Alarmtop = top
+	ob.Alarmbot = bot
+	ob.Savetime = time
+	created, _, err := o.ReadOrCreate(&ob, "Name", "Drvname")
+	if err == nil {
 		if created {
 			return "OK"
 		} else {
 			return "ERR"
 		}
 	}
+	beego.Info(err)
 	return "ERR"
 }
-func Inserttodotvalue(dlist Dotvalue) string {
+func Inserttodotvalue(dlist Maindot) string {
 	o := orm.NewOrm()
+	var tmpdot Dotvalue
+	tmpdot.Drvname = dlist.Drvname
+	tmpdot.Dotname = dlist.Name
+	tmpdot.Value = dlist.Value
+	tmpdot.Status = dlist.Status
+	tmpdot.Time = time.Now().Format("2006-01-02 15:04:05")
 	//ob := Dotvalue{Drvname: drv, Dotname: name, Value: value, Status: status, Time: time.Now().Format("2006-01-02 15:04:05")}
 	// 三个返回参数依次为：是否新创建的，对象 Id 值，错误
-	if created, err := o.Insert(&dlist); err == nil {
+	if created, err := o.Insert(&tmpdot); err == nil {
 		if created != 0 {
 			return "OK"
 		} else {
@@ -105,37 +113,37 @@ func Getusrinfo() (string, error) {
 	o := orm.NewOrm()
 	_, err := o.Raw("SELECT name FROM usr").QueryRows(&ob)
 	if err == nil {
-		//fmt.Println(ob)
+		//beego.Info(ob)
 	}
 	str, err := json.Marshal(ob)
 	return string(str), err
 }
 
-func GetMaindrvinfo() error {
-	o := orm.NewOrm()
-	_, err := o.Raw("SELECT * FROM maindrv").QueryRows(&MBusDrvList)
-	if err == nil {
-		//fmt.Println(ob)
-	}
-	for i := 0; i < len(MBusDrvList); i++ {
-		//根据每个设备的名称选取每个设备的数据点
-		_, err = o.Raw("SELECT * FROM Maindot where drvname=?", MBusDrvList[i].Name).QueryRows(&MBusDotList)
-		var tmp MainDrvType
-		tmp.Drv = MBusDrvList[i]
-		if err == nil {
-			copy(tmp.Dot, MBusDotList)
-		}
-		MBusDrv = append(MBusDrv, tmp)
-	}
-	return err
-}
+// func GetMaindrvinfo() error {
+// 	o := orm.NewOrm()
+// 	_, err := o.Raw("SELECT * FROM maindrv").QueryRows(&MBusDrvList)
+// 	if err == nil {
+// 		//beego.Info(ob)
+// 	}
+// 	for i := 0; i < len(MBusDrvList); i++ {
+// 		//根据每个设备的名称选取每个设备的数据点
+// 		_, err = o.Raw("SELECT * FROM Maindot where drvname=?", MBusDrvList[i].Name).QueryRows(&MBusDotList)
+// 		var tmp MainDrvType
+// 		tmp.Drv = MBusDrvList[i]
+// 		if err == nil {
+// 			copy(tmp.Dot, MBusDotList)
+// 		}
+// 		MBusDrv = append(MBusDrv, tmp)
+// 	}
+// 	return err
+// }
 
 func Getdrvdotinfo(name string) (string, error) {
 	var ob []Maindot
 	o := orm.NewOrm()
 	_, err := o.Raw("SELECT * FROM maindot WHERE drv = ?", name).QueryRows(&ob)
 	if err == nil {
-		//fmt.Println(ob)
+		//beego.Info(ob)
 	}
 	str, err := json.Marshal(ob)
 	return string(str), err
@@ -146,7 +154,7 @@ func Getusrdrvinfo(name string) (string, error) {
 	o := orm.NewOrm()
 	_, err := o.Raw("SELECT * FROM usrdrv WHERE usrname = ?", name).QueryRows(&ob)
 	if err == nil {
-		//fmt.Println(ob)
+		//beego.Info(ob)
 	}
 	str, err := json.Marshal(ob)
 	return string(str), err
@@ -156,25 +164,25 @@ func Setusrdrv(name string, drvstring string) (string, error) {
 	//usr := Usrdrv{Usrname: name}
 	o := orm.NewOrm()
 	o.Raw("DELETE FROM usrdrv WHERE usrname = ?", name).Exec()
-	//fmt.Println(name, drvstring)
+	//beego.Info(name, drvstring)
 	json.Unmarshal([]byte(drvstring), &ob)
-	fmt.Println(ob)
+	beego.Info(ob)
 	_, err := o.InsertMulti(len(ob), ob)
 	return "successNums", err
 }
 func Getusrnotdrvinfo(name string) (string, error) {
 	var ob []Maindrv
 	o := orm.NewOrm()
-	_, err := o.Raw("SELECT * FROM drv where name not in (select drvname from usrdrv where usrname = ? )", name).QueryRows(&ob)
+	_, err := o.Raw("SELECT * FROM maindrv where name not in (select drvname from usrdrv where usrname = ? )", name).QueryRows(&ob)
 	if err == nil {
-		fmt.Println(ob)
+		beego.Info(ob)
 	}
 	str, err := json.Marshal(ob)
 	return string(str), err
 }
 func Dltdrvdot(drv string, dot string) string {
 	o := orm.NewOrm()
-	_, err := o.Raw("DELETE FROM dot WHERE name = ? and drv = ?", dot, drv).Exec()
+	_, err := o.Raw("DELETE FROM maindot WHERE name = ? and drvname = ?", dot, drv).Exec()
 	if err == nil {
 		return "OK"
 	}
@@ -193,11 +201,11 @@ func Getdotvalue(drv string, dot string, start string, stop string) (string, err
 	o := orm.NewOrm()
 	_, err := o.Raw("SELECT value FROM dotvalue where drvname=? and dotname=? and time >= ? and time <= ?", drv, dot, start, stop).QueryRows(&ob)
 	if err == nil {
-		fmt.Println(ob)
+		beego.Info(ob)
 	}
 	_, err = o.Raw("SELECT time FROM dotvalue where drvname=? and dotname=? and time >= ? and time <= ?", drv, dot, start, stop).QueryRows(&obtime)
 	if err == nil {
-		fmt.Println(ob)
+		beego.Info(ob)
 	}
 	var rlt Dotvaluertl
 	rlt.Data = ob

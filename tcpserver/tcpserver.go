@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net"
 	"os"
+
+	"github.com/astaxie/beego"
 )
 
 var host = flag.String("host", "", "host")
@@ -29,18 +31,18 @@ func Tcpstart(ports string) {
 	// 监听
 	l, err = net.Listen("tcp", *host+":"+ports)
 	if err != nil {
-		fmt.Println("Error listening:", err)
+		beego.Info("Error listening:", err)
 		os.Exit(1)
 	}
 	defer l.Close()
 
-	fmt.Println("Listening on " + *host + ":" + *port)
+	beego.Info("Listening on " + *host + ":" + *port)
 
 	for {
 		// 接收一个client
 		conn, err := l.Accept()
 		if err != nil {
-			fmt.Println("Error accepting: ", err)
+			beego.Info("Error accepting: ", err)
 			os.Exit(1)
 		}
 
@@ -56,7 +58,7 @@ func Tcpstart(ports string) {
 func handleRequest(conn net.Conn) {
 	ipStr := conn.RemoteAddr().String()
 	defer func() {
-		fmt.Println("Disconnected :" + ipStr)
+		beego.Info("Disconnected :" + ipStr)
 		conn.Close()
 	}()
 
@@ -72,12 +74,12 @@ func handleRequest(conn net.Conn) {
 		}
 		if n > 0 {
 			Buffer[n] = 0
-			fmt.Println(Buffer[0:n])
+			beego.Info(Buffer[0:n])
 			conn.Write(Buffer[0:n])
 		}
 		//conn.Write(r)
 		//conn.Write([]byte("\n"))
 	}
 
-	fmt.Println("Done!")
+	beego.Info("Done!")
 }

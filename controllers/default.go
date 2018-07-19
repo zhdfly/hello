@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"hello/tcpserver"
 
 	"github.com/astaxie/beego"
@@ -13,15 +12,7 @@ type MainController struct {
 
 func (c *MainController) Get() {
 	c.Data["name"] = c.GetSession("loginuser")
-	fmt.Println(c.GetSession("loginuser"))
-	dt, len, err := tcpserver.GetRealTimeData(c.GetSession("loginuser"))
-	if err == nil {
-		c.Data["tmp"] = dt
-		c.Data["len"] = len
-	} else {
-		c.Data["tmp"] = "Error!!!"
-	}
-
+	beego.Info(c.GetSession("loginuser"))
 	c.TplName = "index.html"
 }
 func (this *MainController) Post() {
@@ -29,7 +20,7 @@ func (this *MainController) Post() {
 	beego.Info(posttype)
 	if posttype == "dotvalue" {
 		rlt, err := tcpserver.Getdotvalue(this.GetString("drv"), this.GetString("dot"), this.GetString("start"), this.GetString("stop"))
-		fmt.Println(rlt)
+		beego.Info(rlt)
 		if err == nil {
 			this.Ctx.WriteString(rlt)
 		} else {
@@ -38,7 +29,7 @@ func (this *MainController) Post() {
 	}
 	if posttype == "setwarning" {
 		rlt, err := tcpserver.Setdotwarning(this.GetString("drv"), this.GetString("dot"), this.GetString("top"), this.GetString("bot"))
-		fmt.Println(rlt)
+		beego.Info(rlt)
 		if err == nil {
 			this.Ctx.WriteString(rlt)
 		} else {
@@ -47,7 +38,7 @@ func (this *MainController) Post() {
 	}
 	//获取实时数据
 	if posttype == "getreal" {
-		rlt, _, err := tcpserver.GetRealTimeData(this.GetSession("loginuser"))
+		rlt, _, err := tcpserver.GetUserDrvsFromMem(this.GetSession("loginuser"))
 		if err == nil {
 			this.Ctx.WriteString(rlt)
 		} else {

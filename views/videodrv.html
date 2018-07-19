@@ -117,7 +117,7 @@
                     alert("设备验证码输入不正确")
                     return
                 }
-                $.post("/admin/video",
+                $.post("/web/video",
                     {
                         type: "newvideo",
                         name:name,
@@ -133,7 +133,7 @@
             },
             getdrvlist: function () {
                 var self = this
-                $.post("/admin/manage",
+                $.post("/web/usermag",
                     {
                         type: "userdrv",
                         usr: self.user,

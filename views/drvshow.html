@@ -18,16 +18,16 @@
     </div>
     <!-- OVERVIEW -->
     <div>
-        <div v-if="ob.Sensornum > 0">            
+        <div v-if="ob.Sensornum > 0">
             <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
                 传感器节点
                 <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-                    <a :href="'/admin/muxchart?user='+user+'&drv='+drv" type="button" style="color:#fff;">混合数据展示</a>
+                    <a :href="'/web/muxchart?user='+user+'&drv='+drv" type="button" style="color:#fff;">混合数据展示</a>
                 </span>
             </div>
             <br>
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Type == 4">
+                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Type == 4 || v.Type == 3">
                     <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
                         <div class="panel-title">
                             <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
@@ -41,10 +41,13 @@
                             <div style="padding: 5px;margin-top: 10px">
                                 <div>
                                     <div style="float:left;font-size: 25px;width: 60%;text-align: center">
-                                        {{v.Value}}
+                                        {{v.Value.toFixed(2)}}
+                                    </div>
+                                    <div style="float:left;margin-right: 10px">
+                                        {{v.Unit}}
                                     </div>
                                     <div style="float:left;">
-                                        lg
+                                        <a href="#" type="button" data-toggle="modal" data-target="#setregvalue" @click="setregvaluebefor(ob.Drv.Name,v.Name,v.Value)">修改</a>
                                     </div>
                                 </div>
                                 <br>
@@ -52,7 +55,7 @@
                         </div>
                         <div class="panel-footer">
                             <div style="text-align: center">
-                                上限：{{v.Dotwarningtop}} · 下限：{{v.Dotwarningbot}}
+                                上限：{{v.Alarmtop}} · 下限：{{v.Alarmbot}}
                             </div>
                         </div>
                     </div>
@@ -67,13 +70,13 @@
             </div>
             <br>
             <div class="row">
-                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Type == 1">
+                <div class="col-md-3 col-sm-4 col-xs-6" v-for="v in ob.Dot" v-if="v.Type == 1 || v.Type == 2">
                     <div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
                         <div class="panel-title">
                             <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-                                <a href="#" type="button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drv.Name,v.Name)">历史</a>
+                                <a href="#" type="button ladda-button" data-toggle="modal" data-target="#userdrvs" @click="getvalue(ob.Drv.Name,v.Name)">历史</a>
                                 ·
-                                <a href="#" type="button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Alarmtop,v.Alarmbot,ob.Drv.Name,v.Name)">设置</a>
+                                <a href="#" type="button ladda-button" data-toggle="modal" data-target="#setwin" @click="setwarningwin(v.Alarmtop,v.Alarmbot,ob.Drv.Name,v.Name)">设置</a>
                             </span>
                             {{v.Name}}
                         </div>
@@ -81,11 +84,11 @@
                             <div style="padding: 5px;margin-top: 10px">
                                 <div style="text-align: center">
 
-                                    <div v-if="v.Value==='1'">
-                                        <a href="#" class="btn btn-rounded btn-success">开启</a>
+                                    <div v-if="v.Value==1">
+                                        <a :id="'button'+v.Name" class="btn btn-rounded btn-success" @click="setiovalue(v.Name,v.Value, $event)">开启</a>
                                     </div>
                                     <div v-else>
-                                        <a href="#" class="btn btn-rounded btn-warning">关闭</a>
+                                        <a :id="'button'+v.Name" class="btn btn-rounded btn-warning" @click="setiovalue(v.Name,v.Value, $event)">关闭</a>
                                     </div>
 
                                 </div>
@@ -188,6 +191,34 @@
                 </div>
             </div>
         </div>
+        <div class="modal fade" id="setregvalue" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                        <h4 class="modal-title">
+                            <div id="valuetitles">管理设备</div>
+                        </h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row" style="vertical-align: middle;border-bottom: silver;margin: 5px">
+                            <div class="col-xs-4" style="line-height: 30px">
+                                设定值：
+                            </div>
+                            <div class="col-xs-4">
+                                <input type='text' id='setvalueinput' name='date'>
+                            </div>
+                            <div class="col-xs-4">
+                            <button type="button" id="setvaluebutton" class="btn btn-success pull-right" @click="setregvalue($event)">确定</a>
+                            </div>
+                        </div>
+                        <br>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <!-- END OVERVIEW -->
@@ -203,29 +234,115 @@
             vob: JSON.parse([[.video]])
         },
         created: function () {
-				var self = this
-				console.log("获取用户设备信息")
-				$.post("/admin/drvshow",
-					{
-						type: "getdotinfo",
-                        user:self.user,
-                        drv:self.drv
-					},
-					function (data, status) {
+            var self = this
+            console.log("获取用户设备信息")
+            $.post("/web/drvshow",
+                {
+                    type: "getdotinfo",
+                    user: self.user,
+                    drv: self.drv
+                },
+                function (data, status) {
+                    console.log(JSON.parse(data))
+                    try {
+                        self.ob = JSON.parse(data)
+                    } catch (e) {
+                        console.log(e)
+                    }
+                    console.log(self.ob)
+                    if (self.ob.Videonum > 0) {
+                        var ezplay = new EZUIPlayer('myPlayer');
+                    }
+                    console.log("获取用户信息成功", self)
+                });
+        },
+        methods: {
+            getdotinfo: function () {
+                var self = this
+                console.log("获取用户设备信息")
+                $.post("/web/drvshow",
+                    {
+                        type: "getdotinfo",
+                        user: self.user,
+                        drv: self.drv
+                    },
+                    function (data, status) {
                         console.log(JSON.parse(data))
-                        try{
-						    self.ob = JSON.parse(data)
-                        }catch(e){
+                        try {
+                            self.ob = JSON.parse(data)
+                        } catch (e) {
                             console.log(e)
                         }
                         console.log(self.ob)
-                        if(self.ob.Videonum > 0){
+                        if (self.ob.Videonum > 0) {
                             var ezplay = new EZUIPlayer('myPlayer');
                         }
-						console.log("获取用户信息成功", self)
-					});
-			},
-        methods: {
+                        console.log("获取用户信息成功", self)
+                    });
+            },
+            setiovalue: function (dot, v, event) {
+                var self = this
+                var vl = "0"
+
+                if (v == 1) {
+                    vl = "0"
+                } else {
+                    vl = "1"
+                }
+                //event.srcElement.value("正在设置")
+                var el = event.currentTarget
+                $(el).text("WITE..")
+                console.log($(el).text())
+                $.post("/web/drvshow",
+                    {
+                        type: "setiovalue",
+                        drv: self.drv,
+                        dot: dot,
+                        value: vl
+                    }, function (data, status) {
+                        if (vl == "0") {
+                            $(el).text("关闭")
+                            for( var c in self.ob.Dot)
+                            {
+                                if (self.ob.Dot[c].Name == dot){
+                                    self.ob.Dot[c].Value = 0
+                                }
+                            }
+                            $(el).className = 'btn btn-rounded btn-success'
+                        } else {
+                            $(el).text("开启")
+                            for(var c in self.ob.Dot)
+                            {
+                                if (self.ob.Dot[c].Name == dot){
+                                    self.ob.Dot[c].Value = 1
+                                }
+                            }
+                            $(el).className = 'btn btn-rounded btn-warning'
+                        }
+                    })
+            },
+            setregvalue:function(event){
+                var self = this
+                var el = event.currentTarget
+                $(el).text("正在设置..")
+                console.log($(el).text())
+                $.post("/web/drvshow",
+                    {
+                        type: "setregvalue",
+                        drv: self.drv,
+                        dot: self.dot,
+                        value: $("#setvalueinput").val()
+                    }, function (data, status) {
+                        $(el).text("设置成功")
+                    })
+            },
+            setregvaluebefor: function (dot, v, ov) {
+                var self = this
+                $("#setvaluebutton").text("确定")
+                $("#setvalueinput").val(ov)
+                self.dot = v
+                
+            },
             setwarningwin: function (top, bot, drv, dot) {
                 var self = this;
                 self.drv = drv
@@ -237,7 +354,7 @@
             },
             setwarning: function () {
                 var self = this;
-                $.post("/admin/drvshow",
+                $.post("/web/drvshow",
                     {
                         type: "setwarning",
                         drv: self.drv,
@@ -262,7 +379,7 @@
                     $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
                 }
                 $("#valuetitle").text(self.drv + ":" + self.dot + "  历史数据")
-                $.post("/admin/drvshow",
+                $.post("/web/drvshow",
                     {
                         type: "dotvalue",
                         drv: self.drv,
@@ -370,6 +487,6 @@
         $("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
         $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
     });
-    
+
 </script>
 <!-- END MAIN -->
