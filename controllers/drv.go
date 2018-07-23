@@ -159,7 +159,7 @@ func (c *MuxChartContraller) Get() {
 func (this *MuxChartContraller) Post() {
 	posttype := this.GetString("type")
 	if posttype == "dotvalue" {
-		rlt, err := tcpserver.Getdotvalue(this.GetString("drv"), this.GetString("dot"), this.GetString("start"), this.GetString("stop"))
+		rlt, err := tcpserver.Getalldotvalue(this.GetString("drv"), this.GetString("start"), this.GetString("stop"))
 		beego.Info(rlt)
 		if err == nil {
 			this.Ctx.WriteString(rlt)

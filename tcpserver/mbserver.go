@@ -69,15 +69,15 @@ func GetFloat32ToByte(float float32) []byte {
 func Getmbdotinfo() {
 	MBDrv = nil
 	o := orm.NewOrm()
-	//获取态神设备的列表信息
+	//获取MODBUS设备的列表信息
 	_, err := o.Raw("SELECT * FROM maindrv where packtype = 'MODBUS'").QueryRows(&MBDrv)
 	if err != nil {
 		beego.Info("ERROR:mb 001", err)
 		return
 	}
-	//根据态神设备列表信息，补充每个态神设备的数据点和其他信息
+	//根据MODBUS设备列表信息，补充每个MODBUS设备的数据点和其他信息
 	for i := 0; i < len(MBDrv); i++ {
-		//根据态神设备的列表信息生成索引MAP
+		//根据MODBUS设备的列表信息生成索引MAP
 		MBDrvMap[MBDrv[i].Drv.Name] = i + 1
 		_, err = o.Raw("SELECT * FROM maindot where drvname=? order by addr asc", MBDrv[i].Drv.Name).QueryRows(&MBDrv[i].Dot)
 		if err != nil {

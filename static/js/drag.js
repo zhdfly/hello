@@ -3,9 +3,6 @@
  * url http://levi.cg.am
  */
 $(function() {
-	function debug(msg){
-		$("#debug").text(msg + "\n");
-	}
 	$(document).mousemove(function(e) {
 		if (!!this.move) {
 			var posix = !document.move_target ? {'x': 0, 'y': 0} : document.move_target.posix,

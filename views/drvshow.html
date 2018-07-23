@@ -22,7 +22,7 @@
             <div class="title pull-bottom" style="border-left: 2px solid #399bff;padding-left: 10px">
                 传感器节点
                 <span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-                    <a :href="'/web/muxchart?user='+user+'&drv='+drv" type="button" style="color:#fff;">混合数据展示</a>
+                    <a :href="'/web/muxchart?user='+user+'&drv='+drv" type="button" style="color:#fff;">历史数据报表</a>
                 </span>
             </div>
             <br>
@@ -139,11 +139,15 @@
                             <div class="col-sm-2" style="line-height: 30px">
                                 时间：
                             </div>
-                            <div class="col-sm-3">
-                                <input type='text' class='form-control selectData' id='datestart' name='date'>
-                            </div>
-                            <div class="col-sm-3">
-                                <input type='text' class='form-control selectData' id='datestop' name='date'>
+                            <div class="col-sm-6">
+                                <div class="input-group">
+                                    <button type="button" class="btn btn-default" id="daterange-btn">
+                                        <span>
+                                            <i class="fa fa-calendar"></i> 请选择
+                                        </span>
+                                        <i class="fa fa-calendar"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div class="col-sm-4">
                                 <button type="button" class="btn btn-success pull-right" @click="getvalue('S','S')">查询</a>
@@ -211,7 +215,7 @@
                                 <input type='text' id='setvalueinput' name='date'>
                             </div>
                             <div class="col-xs-4">
-                            <button type="button" id="setvaluebutton" class="btn btn-success pull-right" @click="setregvalue($event)">确定</a>
+                                <button type="button" id="setvaluebutton" class="btn btn-success pull-right" @click="setregvalue($event)">确定</a>
                             </div>
                         </div>
                         <br>
@@ -302,18 +306,16 @@
                     }, function (data, status) {
                         if (vl == "0") {
                             $(el).text("关闭")
-                            for( var c in self.ob.Dot)
-                            {
-                                if (self.ob.Dot[c].Name == dot){
+                            for (var c in self.ob.Dot) {
+                                if (self.ob.Dot[c].Name == dot) {
                                     self.ob.Dot[c].Value = 0
                                 }
                             }
                             $(el).className = 'btn btn-rounded btn-success'
                         } else {
                             $(el).text("开启")
-                            for(var c in self.ob.Dot)
-                            {
-                                if (self.ob.Dot[c].Name == dot){
+                            for (var c in self.ob.Dot) {
+                                if (self.ob.Dot[c].Name == dot) {
                                     self.ob.Dot[c].Value = 1
                                 }
                             }
@@ -321,7 +323,7 @@
                         }
                     })
             },
-            setregvalue:function(event){
+            setregvalue: function (event) {
                 var self = this
                 var el = event.currentTarget
                 $(el).text("正在设置..")
@@ -341,7 +343,7 @@
                 $("#setvaluebutton").text("确定")
                 $("#setvalueinput").val(ov)
                 self.dot = v
-                
+
             },
             setwarningwin: function (top, bot, drv, dot) {
                 var self = this;
@@ -372,20 +374,14 @@
                     self.drv = drv
                     self.dot = dot
                 }
-                if ($("#datestart").val() == "") {
-                    var starttime = new Date(new Date().getTime())
-                    var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-                    $("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
-                    $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
-                }
                 $("#valuetitle").text(self.drv + ":" + self.dot + "  历史数据")
                 $.post("/web/drvshow",
                     {
                         type: "dotvalue",
                         drv: self.drv,
                         dot: self.dot,
-                        start: $("#datestart").val(),
-                        stop: $("#datestop").val()
+                        start: $('#daterange-btn span').html().split("-")[0],
+                        stop: $('#daterange-btn span').html().split("-")[1]
                     },
                     function (data, status) {
                         myChart.setOption({
@@ -484,9 +480,33 @@
     $('#userdrvs').on('show.bs.modal', function (event) {
         var starttime = new Date(new Date().getTime())
         var stoptime = new Date(new Date().getTime() + 24 * 60 * 60 * 1000)
-        $("#datestart").val(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate())
-        $("#datestop").val(stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate())
+        $('#daterange-btn span').html(starttime.getFullYear() + '/' + (starttime.getMonth() + 1) + '/' + starttime.getDate() + '-' + stoptime.getFullYear() + '/' + (stoptime.getMonth() + 1) + '/' + stoptime.getDate());
     });
+    $('.ranges_1 ul').remove();
+    $('#daterange-btn').daterangepicker({
+        ranges: {
+            '一天': [moment().subtract(+1, 'days'), moment()],
+            '七天': [moment().subtract(+6, 'days'), moment()],
+            '30天': [moment().subtract(+29, 'days'), moment()],
+            '60天': [moment().subtract(+59, 'days'), moment()]
+        },
+        startDate: moment(),
+        endDate: moment()
+    },
+        function (start, end, label) {
+            //label:通过它来知道用户选择的是什么，传给后台进行相应的展示
+            console.log(label)
+            if (label == '一天') {
+                $('#daterange-btn span').html(start.format('YYYY/MM/DD') + '-' + end.format('YYYY/MM/DD'));
+            } else if (label == '七天') {
+                $('#daterange-btn span').html(start.format('YYYY/MM/DD') + '-' + end.format('YYYY/MM/DD'));
+            } else if (label == '30天') {
+                $('#daterange-btn span').html(start.format('YYYY/MM/DD') + '-' + end.format('YYYY/MM/DD'));
+            } else if (label == '60天') {
+                $('#daterange-btn span').html(start.format('YYYY/MM/DD') + '-' + end.format('YYYY/MM/DD'));
+            }
 
+        }
+    );
 </script>
 <!-- END MAIN -->

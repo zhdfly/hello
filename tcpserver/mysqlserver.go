@@ -189,11 +189,6 @@ func Dltdrvdot(drv string, dot string) string {
 	return "ERR"
 }
 
-type Dotvaluertl struct {
-	Data []string
-	Time []string
-}
-
 func Getdotvalue(drv string, dot string, start string, stop string) (string, error) {
 	var ob []string
 	var obtime []string
@@ -211,6 +206,45 @@ func Getdotvalue(drv string, dot string, start string, stop string) (string, err
 	rlt.Data = ob
 	rlt.Time = obtime
 	str, err := json.Marshal(rlt)
+	return string(str), err
+}
+
+type Dotvaluertl struct {
+	Name string
+	Data []string
+	Time []string
+}
+
+func Getalldotvalue(drv string, start string, stop string) (string, error) {
+
+	var dotvalue []string
+	var dottime []string
+	var dotlist []Dotvaluertl
+	var dotname []string
+	beego.Info(drv, start, stop)
+	o := orm.NewOrm()
+	_, err := o.Raw("SELECT name FROM maindot where drvname=?", drv).QueryRows(&dotname)
+	if err == nil {
+		beego.Info(dotname)
+	}
+	for c, i := range dotname {
+		beego.Info(c, i)
+		_, err := o.Raw("SELECT time FROM dotvalue where drvname=? and dotname=? and time >= ? and time <= ?", drv, i, start, stop).QueryRows(&dottime)
+		if err != nil {
+			beego.Info(err)
+		}
+		_, err = o.Raw("SELECT value FROM dotvalue where drvname=? and dotname=? and time >= ? and time <= ?", drv, i, start, stop).QueryRows(&dotvalue)
+		if err != nil {
+			beego.Info(err)
+		}
+		var tmp Dotvaluertl
+		tmp.Name = i
+		tmp.Data = dotvalue
+		tmp.Time = dottime
+		dotlist = append(dotlist, tmp)
+	}
+
+	str, err := json.Marshal(dotlist)
 	return string(str), err
 }
 func Setdotwarning(drv string, dot string, top string, bot string) (string, error) {
