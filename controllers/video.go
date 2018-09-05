@@ -9,12 +9,12 @@ type VideoController struct {
 }
 
 //登录页面
-func (c *VideoController) Get() {
-	c.Data["name"] = c.GetSession("loginuser")
-	c.Data["user"] = c.GetSession("loginuser")
+// func (c *VideoController) Get() {
+// 	c.Data["name"] = c.GetSession("loginuser")
+// 	c.Data["user"] = c.GetSession("loginuser")
 
-	c.TplName = "videodrv.html"
-}
+// 	c.TplName = "videodrv.html"
+// }
 
 //登录功能
 func (c *VideoController) Post() {

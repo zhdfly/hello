@@ -4,38 +4,24 @@ import (
 	"hello/tcpserver"
 
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/logs"
 )
+
+type IndexController struct {
+	beego.Controller
+}
+
+func (c *IndexController) Get() {
+	c.TplName = "index.html"
+}
 
 type MainController struct {
 	beego.Controller
 }
 
-func (c *MainController) Get() {
-	c.Data["name"] = c.GetSession("loginuser")
-	beego.Info(c.GetSession("loginuser"))
-	c.TplName = "index.html"
-}
 func (this *MainController) Post() {
 	posttype := this.GetString("type")
-	beego.Info(posttype)
-	if posttype == "dotvalue" {
-		rlt, err := tcpserver.Getdotvalue(this.GetString("drv"), this.GetString("dot"), this.GetString("start"), this.GetString("stop"))
-		beego.Info(rlt)
-		if err == nil {
-			this.Ctx.WriteString(rlt)
-		} else {
-			this.Ctx.WriteString("")
-		}
-	}
-	if posttype == "setwarning" {
-		rlt, err := tcpserver.Setdotwarning(this.GetString("drv"), this.GetString("dot"), this.GetString("top"), this.GetString("bot"))
-		beego.Info(rlt)
-		if err == nil {
-			this.Ctx.WriteString(rlt)
-		} else {
-			this.Ctx.WriteString("")
-		}
-	}
+	logs.Info(posttype)
 	//获取实时数据
 	if posttype == "getreal" {
 		rlt, _, err := tcpserver.GetUserDrvsFromMem(this.GetSession("loginuser"))
@@ -44,5 +30,24 @@ func (this *MainController) Post() {
 		} else {
 			this.Ctx.WriteString("")
 		}
+	}
+	if posttype == "getareadrvlist" {
+		rlt := tcpserver.GetUserAreaDrvInfoFromMem(this.GetSession("loginuser"))
+		this.Ctx.WriteString(rlt)
+	}
+	if posttype == "getusermainmsg" {
+		rlt := tcpserver.GetUserMainMsg(this.GetSession("loginuser"))
+		this.Ctx.WriteString(rlt)
+	}
+	if posttype == "getdrvalarm" {
+		rlt := tcpserver.GetDrvAlarm(this.GetString("drv"))
+		this.Ctx.WriteString(rlt)
+	}
+	if posttype == "actuseralarm" {
+		drv := this.GetString("drv")
+		dot := this.GetString("dot")
+		time := this.GetString("time")
+		rlt := tcpserver.ActAlarmNotice(drv, dot, time)
+		this.Ctx.WriteString(rlt)
 	}
 }

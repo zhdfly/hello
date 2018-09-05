@@ -1,114 +1,21 @@
-[[template "top.html" .]]
-
-<!-- MAIN -->
-<div class="content" id="app">
-	<div class="page-header">
-		<h1 class="title">总体预览</h1>
-		<ol class="breadcrumb">
-			<li class="active">总体预览</li>
-		</ol>
-		<!-- Start Page Header Right Div -->
-		<div class="right">
-			<div class="btn-group" role="group" aria-label="...">
-				<button type="button" class="btn btn-icon btn-light" @click="list = true">
-					<i class="fa fa-th-list"></i>
-				</button>
-				<button type="button" class="btn btn-icon btn-light" @click="list = false">
-					<i class="fa fa-th"></i>
-				</button>
-			</div>
-		</div>
-		<!-- End Page Header Right Div -->
-
-	</div>
-	<!-- OVERVIEW -->
-
-	<div v-if="list">
-		<table class="table table-striped">
-			<thead>
-				<tr>
-					<td>设备名称</td>
-					<td>设备类型</td>
-					<td>传感器节点</td>
-					<td>控制器节点</td>
-					<td>联锁控制链</td>
-					<td>监控设备点</td>
-					<td>更新时间</td>
-					<td>操作</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr v-for="v in ob.Drv">
-					<td>
-						{{v.Drv.Name}}
-					</td>
-					<td>{{v.Drv.Packtype}}</td>
-					<td>{{v.Sensornum}}</td>
-					<td>{{v.IOnum}}</td>
-					<td>{{v.Logicnum}}</td>
-					<td>{{v.Videonum}}</td>
-					<td>{{v.Flashtime}}</td>
-					<td>
-						<a type="button" :href="'/web/drvshow?user='+ob.User+'&drv=' + v.Drv.Name">查看详细信息</a>
-					</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div v-else>
-		<div class="row">
-			<div class="col-sm-4" v-for="v in ob.Drv">
-				<div class="panel" style="box-shadow: 0px 5px 5px rgba(0, 0, 0, 0.5);">
-					<div class="panel-title">
-						<span class="badge" style="float: left;position:absolute;text-align: right;right: 5%;">
-							<a type="button" :href="'/web/drvshow?user='+ob.User+'&drv=' + v.Drv.Name">查看详细信息</a>
-						</span> {{v.Drv.Name}}
-					</div>
-					<div class="panel-body">
-						<ul class="basic-list">
-							<li>传感器节点
-								<span class="right label label-primary">{{v.Sensornum}}</span>
-							</li>
-							<li>控制器节点
-								<span class="right label label-primary">{{v.IOnum}}</span>
-							</li>
-							<li>联锁控制链
-								<span class="right label label-primary">{{v.Logicnum}}</span>
-							</li>
-							<li>监控设备点
-								<span class="right label label-primary">{{v.Videonum}}</span>
-							</li>
-						</ul>
-					</div>
-					<div class="panel-footer">更新时间：{{v.Flashtime}}</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<script>		
-		new Vue({
-			el: '#app',
-			data: {
-				ob: { User: "", Drv: [] },
-				list: false
-			},
-			methods: {
-				
-			},
-			created: function () {
-				var self = this
-				console.log("获取用户设备信息")
-				$.post("/web/",
-					{
-						type: "getreal",
-					},
-					function (data, status) {
-						self.ob = JSON.parse(data)
-						console.log("获取用户信息成功", self)
-					});
-			}
-		})		
-	</script>
-	<!-- Basic Single Date Picker -->
-	<!-- END MAIN -->
-	[[template "bottom.html" .]]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>龙腾伟业-物联网云服务平台</title>
+</head>
+<script src="https://as.alipayobjects.com/g/component/??es6-shim/0.35.1/es6-sham.min.js,es6-shim/0.35.1/es6-shim.min.js"></script>
+<style>
+    .logo {
+    height: 32px;
+    background: rgba(255,255,255,.2);
+    margin: 16px;
+  }
+</style>
+<body>
+    <div id="app"></div>
+<script type="text/javascript" src="main.js"></script></body>
+<script src="../static//js/main.js"></script>
+</html>

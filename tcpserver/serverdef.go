@@ -1,5 +1,7 @@
 package tcpserver
 
+import "sync"
+
 var table_h = []byte{0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
 	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
 	0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -156,20 +158,25 @@ type Maindot struct {
 
 //设备的基本参数
 type Maindrv struct {
-	Id           int
-	Name         string //设备名称
-	Addr         int    //地址，通用地址，无论是什么数据包类型
-	Port         int    //TCP监听端口
-	Packtype     string //MODBUS,MQTT,CONFIG,WHATEVER
-	Samplingtime int    //采样间隔时间,默认1000ms
-	Retrytime    int    //通讯超时时间，单位秒，超过此时间无信息流，则认为通讯超时
-	Retrycount   int    //通讯失败重试次数，0为无限次
-	Status       int    //设备状态
-	Time         string //泛指添加时间
+	Id       int
+	Name     string //设备名称
+	Addr     int    //地址，通用地址，无论是什么数据包类型
+	Port     int    //TCP监听端口
+	Packtype string //MODBUS,MQTT,CONFIG,WHATEVER
+	Polltime int    //采样间隔时间,默认1000ms
+	Idcode   int    //通讯超时时间，单位秒，超过此时间无信息流，则认为通讯超时
+	Cmittype string //通讯失败重试次数，0为无限次
+	Status   int    //设备状态
+	Time     string //泛指添加时间
+	Point    int    //需要重点监测的设备，显示在主页
+	X        int
+	Y        int
+	Gateway  string
 }
 type MainDrvType struct {
 	Drv       Maindrv
 	Dot       []Maindot
+	Drvname   string
 	Sensornum int             //寄存器数据点数量
 	IOnum     int             //IO数据点数量
 	Logicnum  int             //逻辑判断关系个数 //预留
@@ -179,30 +186,43 @@ type MainDrvType struct {
 	MBCmds    []ModbuscmdType //MODBUS设备读取数据的命令集
 	MBCmdNum  int             //MODBUS设备的命令包的计数
 	MBStatus  int             //MODBUS状态
+	Online    bool
+}
+type Userarea struct {
+	Id      int
+	User    string
+	Area    string
+	Drvs    string
+	Planebk string
+}
+type DailyValue struct {
+	Id      int
+	Dotname string
+	High    float32
+	Low     float32
+	Time    string
+}
+type MainMAPstringint struct {
+	U map[string]int
+	M sync.Mutex
+}
+type MainMAPstringfloat struct {
+	U map[string]float32
+	M sync.Mutex
+}
+type Drvdotalarm struct {
+	Id     int
+	Drv    string
+	Dot    string
+	Msg    string
+	Status string
+	Time   string
 }
 
-//态神的设备和数据点
-// type ModBusDot struct {
-// 	Dotname       string
-// 	Dottype       string
-// 	Dotwarningtop float32
-// 	Dotwarningbot float32
-// 	Dotstatus     string
-// 	Value         float32
-// }
-// type ModBusDrv struct {
-// 	Drvname   string
-// 	Sensornum int
-// 	IOnum     int
-// 	Logicnum  int
-// 	Videonum  int
-// 	Flashtime string
-// 	Dot       []ModBusDot
-// }
 type MainUserDrv struct {
-	User    string
-	Drv     []Maindrv
-	DrvInfo []Maindrv
+	User  string
+	Alarm []Drvdotalarm
+	Drv   []Maindrv
 }
 
 //萤石云JSON数据格式
