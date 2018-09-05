@@ -142,7 +142,7 @@ func GatewayLiteThread(port int) {
 		Port: port,
 	})
 	chkError(err2)
-	//udp没有对客户端连接的Accept函数
+	//udp没有对客户端连接的Accept函数。
 	for {
 		clientHandle(udpconn)
 	}
